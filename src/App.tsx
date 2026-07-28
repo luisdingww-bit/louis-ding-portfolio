@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import Button from './components/Button';
 import Reveal from './components/Reveal';
 import TopNav from './components/TopNav';
@@ -8,6 +9,7 @@ import PartnerSection from './components/PartnerSection';
 import Footer from './components/Footer';
 import CopyrightBar from './components/CopyrightBar';
 import BottomNav from './components/BottomNav';
+import BlogView from './components/BlogView';
 import { marqueeImages, whatsappUrl } from './constants';
 
 function Hero() {
@@ -77,18 +79,35 @@ function Marquee() {
 }
 
 export default function App() {
+  const [view, setView] = useState<'home' | 'blog'>('home');
+
+  function goBlog() {
+    window.scrollTo(0, 0);
+    setView('blog');
+  }
+  function goHome() {
+    window.scrollTo(0, 0);
+    setView('home');
+  }
+
   return (
     <main className="min-h-screen bg-white">
-      <TopNav />
-      <Hero />
-      <Marquee />
-      <TestimonialSection />
-      <ExpertiseSection />
-      <ProjectsSection />
-      <PartnerSection />
-      <Footer />
-      <CopyrightBar />
-      <BottomNav />
+      <TopNav onHome={goHome} onBlog={goBlog} />
+      {view === 'home' ? (
+        <>
+          <Hero />
+          <Marquee />
+          <TestimonialSection />
+          <ExpertiseSection />
+          <ProjectsSection />
+          <PartnerSection />
+          <Footer />
+          <CopyrightBar />
+          <BottomNav />
+        </>
+      ) : (
+        <BlogView onBack={goHome} />
+      )}
     </main>
   );
 }
