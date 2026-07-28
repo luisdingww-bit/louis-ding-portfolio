@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { CSSProperties, ReactNode } from 'react';
 
 type Variant = 'primary' | 'secondary' | 'tertiary';
 
@@ -8,6 +8,7 @@ interface ButtonProps {
   href?: string;
   className?: string;
   onClick?: () => void;
+  style?: CSSProperties;
 }
 
 const base =
@@ -28,6 +29,7 @@ export default function Button({
   href,
   className = '',
   onClick,
+  style,
 }: ButtonProps) {
   const cls = `${base} ${variants[variant]} ${className}`;
   const external = href?.startsWith('http');
@@ -37,6 +39,7 @@ export default function Button({
       <a
         href={href}
         className={cls}
+        style={style}
         target={external ? '_blank' : undefined}
         rel={external ? 'noreferrer' : undefined}
       >
@@ -46,7 +49,7 @@ export default function Button({
   }
 
   return (
-    <button className={cls} onClick={onClick}>
+    <button className={cls} style={style} onClick={onClick}>
       {children}
     </button>
   );
