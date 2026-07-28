@@ -1,10 +1,12 @@
-// Top navigation bar — entry points for Gallery (站内作品滚动) and Blog (站内博客页).
+// Top navigation bar — entry points for Gallery and Blog (both in-site views).
 // Stays pinned to the top while scrolling.
 export default function TopNav({
   onHome,
+  onGallery,
   onBlog,
 }: {
   onHome: () => void;
+  onGallery: () => void;
   onBlog: () => void;
 }) {
   return (
@@ -18,12 +20,12 @@ export default function TopNav({
         </button>
 
         <nav className="flex items-center gap-6 sm:gap-8">
-          <a
-            href="#gallery"
+          <button
+            onClick={onGallery}
             className="font-mono text-sm text-[#051A24] transition hover:opacity-60"
           >
             画廊
-          </a>
+          </button>
           <button
             onClick={onBlog}
             className="font-mono text-sm text-[#051A24] transition hover:opacity-60"

@@ -10,6 +10,7 @@ import Footer from './components/Footer';
 import CopyrightBar from './components/CopyrightBar';
 import BottomNav from './components/BottomNav';
 import BlogView from './components/BlogView';
+import GalleryView from './components/GalleryView';
 import { marqueeImages, whatsappUrl } from './constants';
 
 function Hero() {
@@ -79,11 +80,15 @@ function Marquee() {
 }
 
 export default function App() {
-  const [view, setView] = useState<'home' | 'blog'>('home');
+  const [view, setView] = useState<'home' | 'blog' | 'gallery'>('home');
 
   function goBlog() {
     window.scrollTo(0, 0);
     setView('blog');
+  }
+  function goGallery() {
+    window.scrollTo(0, 0);
+    setView('gallery');
   }
   function goHome() {
     window.scrollTo(0, 0);
@@ -92,7 +97,7 @@ export default function App() {
 
   return (
     <main className="min-h-screen bg-white">
-      <TopNav onHome={goHome} onBlog={goBlog} />
+      <TopNav onHome={goHome} onGallery={goGallery} onBlog={goBlog} />
       {view === 'home' ? (
         <>
           <Hero />
@@ -105,8 +110,10 @@ export default function App() {
           <CopyrightBar />
           <BottomNav />
         </>
-      ) : (
+      ) : view === 'blog' ? (
         <BlogView onBack={goHome} />
+      ) : (
+        <GalleryView onBack={goHome} />
       )}
     </main>
   );
