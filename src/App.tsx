@@ -1,7 +1,6 @@
 import Button from './components/Button';
 import Reveal from './components/Reveal';
 import TestimonialSection from './components/TestimonialSection';
-import PricingSection from './components/PricingSection';
 import TestimonialCarousel from './components/TestimonialCarousel';
 import ProjectsSection from './components/ProjectsSection';
 import PartnerSection from './components/PartnerSection';
@@ -82,7 +81,6 @@ export default function App() {
       <Hero />
       <Marquee />
       <TestimonialSection />
-      <PricingSection />
       <TestimonialCarousel />
       <ProjectsSection />
       <PartnerSection />
