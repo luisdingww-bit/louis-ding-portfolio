@@ -1,11 +1,11 @@
 import Reveal from './Reveal';
-import RetroHead from './RetroHead';
+import SnapPrintShowcase from './RetroHead';
 
 const PROJECTS = [
   {
     name: 'SnapPrint® 咔印3D',
     desc: '浏览器里的图生3D打印工坊 · 五模式 · 零安装零上传',
-    type: 'retro' as const,
+    type: 'snapprint' as const,
   },
   {
     name: 'Automation Machines',
@@ -22,19 +22,8 @@ const PROJECTS = [
 ];
 
 function ProjectMedia({ type, src, alt }: { type: string; src?: string; alt?: string }) {
-  if (type === 'retro') {
-    return <RetroHead />;
-  }
-  if (type === 'video') {
-    return (
-      <div style={{ position: 'relative', borderRadius: '12px', overflow: 'hidden', background: '#080a10' }}>
-        <video
-          autoPlay muted loop playsInline preload="auto"
-          style={{ width: '100%', display: 'block', objectFit: 'cover', aspectRatio: '16/9' }}
-          src={import.meta.env.BASE_URL + src}
-        />
-      </div>
-    );
+  if (type === 'snapprint') {
+    return <SnapPrintShowcase />;
   }
   return (
     <img src={src} alt={alt ?? ''} className="w-full rounded-2xl object-cover shadow-lg" />
@@ -47,15 +36,21 @@ export default function ProjectsSection() {
       <div className="flex flex-col gap-16 md:gap-20">
         {PROJECTS.map((p) => (
           <div key={p.name}>
-            <Reveal delay={0.1} className="ml-20 md:ml-28">
-              <h3 className="font-mondwest text-2xl font-semibold text-[#051A24] md:text-3xl">
-                {p.name}
-              </h3>
-              <p className="mt-2 text-sm text-[#051A24]/70 md:text-base">{p.desc}</p>
-            </Reveal>
-            <Reveal delay={0.2} className="mt-6">
-              <ProjectMedia type={p.type} src={p.src} alt={p.name} />
-            </Reveal>
+            {p.type === 'snapprint' ? (
+              <SnapPrintShowcase />
+            ) : (
+              <>
+                <Reveal delay={0.1} className="ml-20 md:ml-28">
+                  <h3 className="font-mondwest text-2xl font-semibold text-[#051A24] md:text-3xl">
+                    {p.name}
+                  </h3>
+                  <p className="mt-2 text-sm text-[#051A24]/70 md:text-base">{p.desc}</p>
+                </Reveal>
+                <Reveal delay={0.2} className="mt-6">
+                  <ProjectMedia type={p.type} src={p.src} alt={p.name} />
+                </Reveal>
+              </>
+            )}
           </div>
         ))}
       </div>
