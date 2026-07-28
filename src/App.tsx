@@ -1,5 +1,6 @@
 import Button from './components/Button';
 import Reveal from './components/Reveal';
+import TopNav from './components/TopNav';
 import TestimonialSection from './components/TestimonialSection';
 import TestimonialCarousel from './components/TestimonialCarousel';
 import ProjectsSection from './components/ProjectsSection';
@@ -11,7 +12,7 @@ import { marqueeImages } from './constants';
 
 function Hero() {
   return (
-    <section className="px-6 pt-12 md:pt-16">
+    <section id="top" className="px-6 pt-12 md:pt-16">
       <div className="mx-auto flex max-w-[440px] flex-col items-center text-center">
         <Reveal delay={0.1} className="mb-4">
           <span className="font-mondwest text-[32px] font-semibold tracking-tight text-[#051A24] md:text-[40px] lg:text-[44px]">
@@ -59,7 +60,7 @@ function Hero() {
 function Marquee() {
   const loop = [...marqueeImages, ...marqueeImages];
   return (
-    <section className="mb-16 mt-16 overflow-hidden md:mt-20">
+    <section id="gallery" className="mb-16 mt-16 scroll-mt-20 overflow-hidden md:mt-20">
       <div className="flex w-max animate-marquee">
         {loop.map((src, i) => (
           <img
@@ -78,6 +79,7 @@ function Marquee() {
 export default function App() {
   return (
     <main className="min-h-screen bg-white">
+      <TopNav />
       <Hero />
       <Marquee />
       <TestimonialSection />

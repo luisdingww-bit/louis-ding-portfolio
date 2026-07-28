@@ -25,6 +25,10 @@
 }
 
 /* ---------- Base ---------- */
+html {
+  scroll-behavior: smooth;
+}
+
 html,
 body {
   background: #ffffff;
