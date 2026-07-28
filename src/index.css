@@ -19,8 +19,8 @@
 }
 @font-face {
   font-family: 'PP Mondwest';
-  src: url('/PPMondwest-Regular.woff2') format('woff2');
-  font-weight: 400;
+  src: url('./assets/fraunces.woff2') format('woff2');
+  font-weight: 300 700;
   font-display: swap;
 }
 
