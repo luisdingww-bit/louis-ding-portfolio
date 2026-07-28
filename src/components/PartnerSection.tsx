@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState, type CSSProperties, type MouseEvent } from 'react';
-import { marqueeImages } from '../constants';
+import { marqueeImages, whatsappUrl } from '../constants';
 import Button from './Button';
 
 interface Spawn {
@@ -50,7 +50,7 @@ export default function PartnerSection() {
             Partner with us
           </h2>
           <div className="flex justify-center">
-            <Button variant="primary" href="#partner">
+            <Button variant="primary" href={whatsappUrl}>
               <img
                 src={import.meta.env.BASE_URL + 'louis-ding.jpg'}
                 alt=""

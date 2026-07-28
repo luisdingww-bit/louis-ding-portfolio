@@ -11,3 +11,6 @@ export const marqueeImages = [
   BASE + 'pdf_08.jpeg',
   BASE + 'pdf_09.jpeg',
 ];
+
+// WhatsApp click-to-chat link (+86 18050020614). Edit here to change number.
+export const whatsappUrl = 'https://wa.me/8618050020614';

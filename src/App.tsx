@@ -8,7 +8,7 @@ import PartnerSection from './components/PartnerSection';
 import Footer from './components/Footer';
 import CopyrightBar from './components/CopyrightBar';
 import BottomNav from './components/BottomNav';
-import { marqueeImages } from './constants';
+import { marqueeImages, whatsappUrl } from './constants';
 
 function Hero() {
   return (
@@ -45,7 +45,7 @@ function Hero() {
         </Reveal>
 
         <Reveal delay={0.5} className="mt-5 flex flex-col gap-3 md:mt-6 md:gap-4 sm:flex-row">
-          <Button variant="primary" href="#partner">
+          <Button variant="primary" href={whatsappUrl}>
             Start a chat
           </Button>
           <Button variant="secondary" href="#projects">
