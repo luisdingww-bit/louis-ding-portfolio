@@ -1,11 +1,11 @@
 import Reveal from './Reveal';
+import RetroHead from './RetroHead';
 
 const PROJECTS = [
   {
-    name: 'evr',
-    desc: 'From idea to millions raised for a web3 AI product',
-    type: 'video' as const,
-    src: 'retro-head.mp4',
+    name: 'SnapPrint® 咔印3D',
+    desc: '浏览器里的图生3D打印工坊 · 五模式 · 零安装零上传',
+    type: 'retro' as const,
   },
   {
     name: 'Automation Machines',
@@ -21,7 +21,10 @@ const PROJECTS = [
   },
 ];
 
-function ProjectMedia({ type, src, alt }: { type: string; src: string; alt?: string }) {
+function ProjectMedia({ type, src, alt }: { type: string; src?: string; alt?: string }) {
+  if (type === 'retro') {
+    return <RetroHead />;
+  }
   if (type === 'video') {
     return (
       <div style={{ position: 'relative', borderRadius: '12px', overflow: 'hidden', background: '#080a10' }}>
