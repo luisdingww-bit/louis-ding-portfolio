@@ -1,11 +1,13 @@
-// Top navigation bar — entry points for Gallery and Blog (both in-site views).
+// Top navigation bar — entry points for About / Gallery / Blog (all in-site views).
 // Stays pinned to the top while scrolling.
 export default function TopNav({
   onHome,
+  onAbout,
   onGallery,
   onBlog,
 }: {
   onHome: () => void;
+  onAbout: () => void;
   onGallery: () => void;
   onBlog: () => void;
 }) {
@@ -19,7 +21,13 @@ export default function TopNav({
           LD
         </button>
 
-        <nav className="flex items-center gap-6 sm:gap-8">
+        <nav className="flex items-center gap-5 sm:gap-8">
+          <button
+            onClick={onAbout}
+            className="font-mono text-sm text-[#051A24] transition hover:opacity-60"
+          >
+            关于我
+          </button>
           <button
             onClick={onGallery}
             className="font-mono text-sm text-[#051A24] transition hover:opacity-60"
