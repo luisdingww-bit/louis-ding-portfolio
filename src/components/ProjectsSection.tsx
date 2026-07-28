@@ -4,19 +4,39 @@ const PROJECTS = [
   {
     name: 'evr',
     desc: 'From idea to millions raised for a web3 AI product',
-    img: 'https://motionsites.ai/assets/hero-evr-ventures-preview-DZxeVFEX.gif',
+    type: 'video' as const,
+    src: 'retro-head.mp4',
   },
   {
     name: 'Automation Machines',
     desc: 'Streamlining industrial automation processes',
-    img: 'https://motionsites.ai/assets/hero-automation-machines-preview-DlTveRIN.gif',
+    type: 'img' as const,
+    src: 'https://motionsites.ai/assets/hero-automation-machines-preview-DlTveRIN.gif',
   },
   {
     name: 'xPortfolio',
     desc: 'Modern portfolio management platform',
-    img: 'https://motionsites.ai/assets/hero-xportfolio-preview-D4A8maiC.gif',
+    type: 'img' as const,
+    src: 'https://motionsites.ai/assets/hero-xportfolio-preview-D4A8maiC.gif',
   },
 ];
+
+function ProjectMedia({ type, src, alt }: { type: string; src: string; alt?: string }) {
+  if (type === 'video') {
+    return (
+      <div style={{ position: 'relative', borderRadius: '12px', overflow: 'hidden', background: '#080a10' }}>
+        <video
+          autoPlay muted loop playsInline preload="auto"
+          style={{ width: '100%', display: 'block', objectFit: 'cover', aspectRatio: '16/9' }}
+          src={import.meta.env.BASE_URL + src}
+        />
+      </div>
+    );
+  }
+  return (
+    <img src={src} alt={alt ?? ''} className="w-full rounded-2xl object-cover shadow-lg" />
+  );
+}
 
 export default function ProjectsSection() {
   return (
@@ -31,11 +51,7 @@ export default function ProjectsSection() {
               <p className="mt-2 text-sm text-[#051A24]/70 md:text-base">{p.desc}</p>
             </Reveal>
             <Reveal delay={0.2} className="mt-6">
-              <img
-                src={p.img}
-                alt={p.name}
-                className="w-full rounded-2xl object-cover shadow-lg"
-              />
+              <ProjectMedia type={p.type} src={p.src} alt={p.name} />
             </Reveal>
           </div>
         ))}
