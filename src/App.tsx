@@ -2,7 +2,7 @@ import Button from './components/Button';
 import Reveal from './components/Reveal';
 import TopNav from './components/TopNav';
 import TestimonialSection from './components/TestimonialSection';
-import TestimonialCarousel from './components/TestimonialCarousel';
+import ExpertiseSection from './components/ExpertiseSection';
 import ProjectsSection from './components/ProjectsSection';
 import PartnerSection from './components/PartnerSection';
 import Footer from './components/Footer';
@@ -83,7 +83,7 @@ export default function App() {
       <Hero />
       <Marquee />
       <TestimonialSection />
-      <TestimonialCarousel />
+      <ExpertiseSection />
       <ProjectsSection />
       <PartnerSection />
       <Footer />
