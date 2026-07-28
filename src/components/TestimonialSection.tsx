@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { Quote } from 'lucide-react';
 import Reveal from './Reveal';
 
-const PARALLAX_IMG = '/louis-ding.jpg';
+const PARALLAX_IMG = import.meta.env.BASE_URL + 'louis-ding.jpg';
 
 export default function TestimonialSection() {
   const imgRef = useRef<HTMLImageElement>(null);

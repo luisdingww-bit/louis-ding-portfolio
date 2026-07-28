@@ -52,7 +52,7 @@ export default function PartnerSection() {
           <div className="flex justify-center">
             <Button variant="primary" href="#partner">
               <img
-                src="/louis-ding.jpg"
+                src={import.meta.env.BASE_URL + 'louis-ding.jpg'}
                 alt=""
                 className="h-10 w-10 rounded-full object-cover"
               />
