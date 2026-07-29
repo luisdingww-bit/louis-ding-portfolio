@@ -1,48 +1,68 @@
 import { useEffect, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import Reveal from './Reveal';
+import { useI18n, type Lang } from '../i18n';
 
 interface Expertise {
-  title: string;
-  desc: string;
+  title: Record<Lang, string>;
+  desc: Record<Lang, string>;
   tags: string[];
 }
 
 // Real focus areas for Louis Ding — architecture × AI × digital fabrication.
 const EXPERTISE: Expertise[] = [
   {
-    title: '计算设计',
-    desc: '以算法与规则驱动形式生成，把设计问题转译为可计算的逻辑。',
+    title: { zh: '计算设计', en: 'Computational Design' },
+    desc: {
+      zh: '以算法与规则驱动形式生成，把设计问题转译为可计算的逻辑。',
+      en: 'Driving form-generation with algorithms and rules, translating design problems into computable logic.',
+    },
     tags: ['Computational Design', 'Generative'],
   },
   {
-    title: 'AI 辅助建筑设计',
-    desc: '探索机器学习如何参与方案生成、评估与空间想象。',
+    title: { zh: 'AI 辅助建筑设计', en: 'AI-Assisted Architecture' },
+    desc: {
+      zh: '探索机器学习如何参与方案生成、评估与空间想象。',
+      en: 'Exploring how machine learning participates in scheme generation, evaluation, and spatial imagination.',
+    },
     tags: ['AI-assisted', 'Diffusion', 'LLM'],
   },
   {
-    title: '参数化建模',
-    desc: '基于 Grasshopper / Rhino 构建可调整、可迭代的设计系统。',
+    title: { zh: '参数化建模', en: 'Parametric Modeling' },
+    desc: {
+      zh: '基于 Grasshopper / Rhino 构建可调整、可迭代的设计系统。',
+      en: 'Building adjustable, iterable design systems with Grasshopper / Rhino.',
+    },
     tags: ['Grasshopper', 'Rhino'],
   },
   {
-    title: '数字制造',
-    desc: '从模型到实物：3D 打印、CNC 与机器人加工的实验。',
+    title: { zh: '数字制造', en: 'Digital Fabrication' },
+    desc: {
+      zh: '从模型到实物：3D 打印、CNC 与机器人加工的实验。',
+      en: 'From model to physical object: experiments in 3D printing, CNC and robotic fabrication.',
+    },
     tags: ['3D Printing', 'CNC', 'Robotics'],
   },
   {
-    title: '算法脚本',
-    desc: '用 Python 编写设计与数据分析工具，打通工作流。',
+    title: { zh: '算法脚本', en: 'Algorithmic Scripting' },
+    desc: {
+      zh: '用 Python 编写设计与数据分析工具，打通工作流。',
+      en: 'Writing design and data-analysis tools in Python to connect workflows.',
+    },
     tags: ['Python', 'Scripting'],
   },
   {
-    title: '建筑可视化',
-    desc: '以渲染与图纸讲述空间叙事，连接抽象与体验。',
+    title: { zh: '建筑可视化', en: 'Architectural Visualization' },
+    desc: {
+      zh: '以渲染与图纸讲述空间叙事，连接抽象与体验。',
+      en: 'Telling spatial stories through rendering and drawings, connecting abstraction and experience.',
+    },
     tags: ['Rendering', 'Visualization'],
   },
 ];
 
 export default function ExpertiseSection() {
+  const { lang, t } = useI18n();
   const N = EXPERTISE.length;
   // Triple the list so the forward auto-scroll can loop seamlessly.
   const items = [...EXPERTISE, ...EXPERTISE, ...EXPERTISE];
@@ -115,7 +135,7 @@ export default function ExpertiseSection() {
       <div className="mb-8 flex items-center px-6 md:max-w-4xl md:justify-start md:pr-6">
         <Reveal delay={0.1}>
           <h2 className="text-[32px] leading-[1.1] tracking-tight text-[#0D212C] md:text-[40px] lg:text-[44px]">
-            What I <span className="font-mondwest">do</span>
+            {t('expertise.pre')}<span className="font-mondwest">{t('expertise.em')}</span>
           </h2>
         </Reveal>
       </div>
@@ -138,13 +158,13 @@ export default function ExpertiseSection() {
               className="w-[calc(100vw-48px)] shrink-0 rounded-[32px] bg-white px-6 py-8 shadow-[0_4px_16px_rgba(0,0,0,0.08)] md:w-[427.5px] md:rounded-[40px] md:pl-10 md:pr-10"
             >
               <p className="font-mono text-xs uppercase tracking-[0.15em] text-[#051A24]/50">
-                Expertise
+                {t('expertise.label')}
               </p>
               <h3 className="mt-3 text-2xl font-semibold text-[#0D212C]">
-                {e.title}
+                {e.title[lang]}
               </h3>
               <p className="mt-3 text-base leading-relaxed text-[#051A24]">
-                {e.desc}
+                {e.desc[lang]}
               </p>
               <div className="mt-6 flex flex-wrap gap-2">
                 {e.tags.map((t) => (

@@ -13,9 +13,11 @@ import BlogView from './components/BlogView';
 import GalleryView from './components/GalleryView';
 import AboutView from './components/AboutView';
 import { marqueeImages, whatsappUrl } from './constants';
+import { useI18n } from './i18n';
 
 /* ---------- Clean light intro (no video, no gradient effects) ---------- */
 function Hero() {
+  const { t } = useI18n();
   return (
     <section
       id="top"
@@ -58,7 +60,7 @@ function Hero() {
             letterSpacing: '-0.03em', marginTop: '8px', marginBottom: '20px',
             color: '#051A24',
           }}>
-            Build the next wave,<br />the bold way.
+            {t('hero.title')}
           </h1>
         </Reveal>
 
@@ -68,12 +70,12 @@ function Hero() {
             marginBottom: '28px', maxWidth: '560px',
           }}>
             <p style={{ fontSize: '15px', lineHeight: 1.7, color: '#44525f' }}>
-              我是一名建筑专业的学生，热衷于人工智能、计算设计与数字制造的交叉领域。
+              {t('hero.p1')}
             </p>
             <p style={{ fontSize: '15px', lineHeight: 1.7, color: '#44525f' }}>
-              正在申请研究生，专注于人工智能辅助建筑设计，探索算法如何重新定义空间的想象与实践。
+              {t('hero.p2')}
             </p>
-            <p style={{ fontSize: '15px', lineHeight: 1.7, color: '#44525f' }}>目前研究合作、实习与设计项目机会。</p>
+            <p style={{ fontSize: '15px', lineHeight: 1.7, color: '#44525f' }}>{t('hero.p3')}</p>
           </div>
         </Reveal>
 

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useI18n, type Lang } from '../i18n';
 
 /**
  * SnapPrint showcase card — mirrors the mainframe-hero.surge.sh landing layout.
@@ -8,6 +9,7 @@ import { useEffect, useRef, useState } from 'react';
  *                | top: SVG grain / scanline filter
  */
 export default function SnapPrintShowcase() {
+  const { lang, t } = useI18n();
   const wrapRef = useRef<HTMLDivElement>(null);
   const [eyePos, setEyePos] = useState({ x: 0, y: 0 });
 
@@ -27,12 +29,12 @@ export default function SnapPrintShowcase() {
     return () => window.removeEventListener('mousemove', move);
   }, []);
 
-  const features = [
-    { label: '照片浮雕 · 灰度高保真', tone: 'muted' as const },
-    { label: '2D 轮廓拉伸 · Logo 变 3D', tone: 'muted' as const },
-    { label: '真实 3D 几何 · 单图重建', tone: 'accent' as const },
-    { label: '3COGS 高斯泼溅 · spike 导出', tone: 'accent' as const },
-    { label: '模型库：33 款内置原创模型 · Apache-2.0', tone: 'warm' as const },
+  const features: { label: Record<Lang, string>; tone: 'muted' | 'accent' | 'warm' }[] = [
+    { label: { zh: '照片浮雕 · 灰度高保真', en: 'Photo Relief · High-fidelity Grayscale' }, tone: 'muted' },
+    { label: { zh: '2D 轮廓拉伸 · Logo 变 3D', en: '2D Contour Extrusion · Logo to 3D' }, tone: 'muted' },
+    { label: { zh: '真实 3D 几何 · 单图重建', en: 'True 3D Geometry · Single-image Reconstruction' }, tone: 'accent' },
+    { label: { zh: '3COGS 高斯泼溅 · spike 导出', en: '3COGS Gaussian Splatting · spike Export' }, tone: 'accent' },
+    { label: { zh: '模型库：33 款内置原创模型 · Apache-2.0', en: 'Model Library: 33 Built-in Models · Apache-2.0' }, tone: 'warm' },
   ];
 
   return (
@@ -84,15 +86,14 @@ export default function SnapPrintShowcase() {
 
           {/* headline */}
           <p style={{ fontSize: 17, lineHeight: 1.7, color: '#c8cad0', maxWidth: 420 }}>
-            很高兴你来。一张照片 / 一个 Logo / 一句参数，秒变可打印的 3D
-            模型。数据不出本机。现在，我们打印点什么？
+            {t('snapprint.headline')}
           </p>
 
           {/* feature pills */}
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 4 }}>
             {features.map((f) => (
               <span
-                key={f.label}
+                key={f.label[lang]}
                 style={{
                   padding: '6px 14px',
                   borderRadius: 999,
@@ -110,7 +111,7 @@ export default function SnapPrintShowcase() {
                   color: f.tone === 'accent' ? '#6ec4e8' : f.tone === 'warm' ? '#e0c87a' : '#a8aab2',
                 }}
               >
-                {f.label}
+                {f.label[lang]}
               </span>
             ))}
           </div>
@@ -136,7 +137,7 @@ export default function SnapPrintShowcase() {
               boxShadow: '0 2px 12px rgba(212,168,85,.25)',
             }}
           >
-            进入社区 <span aria-hidden>↗</span>
+            {t('snapprint.cta')} <span aria-hidden>↗</span>
           </a>
         </div>
 

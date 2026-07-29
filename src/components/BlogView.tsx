@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import Button from './Button';
+import { useI18n } from '../i18n';
 
 interface Article {
   id: string;
@@ -60,6 +61,7 @@ function newDraft(): Article {
 
 /* ---------------- Blog list ---------------- */
 export default function BlogView({ onBack }: { onBack: () => void }) {
+  const { t } = useI18n();
   const [articles, setArticles] = useState<Article[]>(() => loadArticles());
   const [selected, setSelected] = useState<Article | null>(null);
   const [editor, setEditor] = useState<Article | null>(null);
@@ -104,19 +106,19 @@ export default function BlogView({ onBack }: { onBack: () => void }) {
           onClick={onBack}
           className="font-mono text-xs text-mist transition hover:opacity-60"
         >
-          ← 返回首页
+          {t('blog.back')}
         </button>
         <h1 className="mt-3 font-mondwest text-4xl font-semibold tracking-tight text-[#051A24] md:text-5xl">
-          文章记录
+          {t('blog.title')}
         </h1>
         <p className="mt-3 text-sm leading-relaxed text-mist md:text-base">
-          建筑 · 计算设计 · 人工智能 的学习与项目笔记。点击「+」即可在网页内新增一篇。
+          {t('blog.intro')}
         </p>
       </header>
 
       {articles.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-[#051A24]/15 py-20 text-center">
-          <p className="text-sm text-mist">还没有文章，点击右下角「+」开始记录。</p>
+          <p className="text-sm text-mist">{t('blog.empty')}</p>
         </div>
       ) : (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -134,7 +136,7 @@ export default function BlogView({ onBack }: { onBack: () => void }) {
 
       <button
         onClick={() => setEditor(newDraft())}
-        aria-label="新增文章"
+        aria-label={t('blog.newAria')}
         className="fixed bottom-24 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-[#051A24] text-3xl leading-none text-white shadow-primary transition hover:scale-105 md:bottom-8"
       >
         +
@@ -159,6 +161,7 @@ function ArticleCard({
   onEdit: () => void;
   onDelete: () => void;
 }) {
+  const { t } = useI18n();
   return (
     <div className="group relative flex flex-col overflow-hidden rounded-2xl bg-white shadow-secondary transition hover:-translate-y-1">
       <button onClick={onOpen} className="block text-left">
@@ -176,7 +179,7 @@ function ArticleCard({
         <div className="p-5">
           <p className="font-mono text-xs text-mist">{article.date}</p>
           <h3 className="mt-1 font-mondwest text-xl font-semibold text-[#051A24]">
-            {article.title || '未命名文章'}
+            {article.title || t('blog.untitled')}
           </h3>
           {article.excerpt && (
             <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-mist">
@@ -189,19 +192,19 @@ function ArticleCard({
       <div className="absolute right-3 top-3 flex gap-2 opacity-0 transition group-hover:opacity-100">
         <button
           onClick={onEdit}
-          aria-label="编辑"
+          aria-label={t('blog.edit')}
           className="rounded-full bg-white/90 px-2 py-1 text-xs text-[#051A24] shadow-secondary"
         >
-          编辑
+          {t('blog.edit')}
         </button>
         <button
           onClick={() => {
-            if (confirm('确定删除这篇？')) onDelete();
+            if (confirm(t('blog.confirmDel'))) onDelete();
           }}
-          aria-label="删除"
+          aria-label={t('blog.delete')}
           className="rounded-full bg-white/90 px-2 py-1 text-xs text-red-600 shadow-secondary"
         >
-          删除
+          {t('blog.delete')}
         </button>
       </div>
     </div>
@@ -220,13 +223,14 @@ function ArticleDetail({
   onEdit: (a: Article) => void;
   onDelete: (id: string) => void;
 }) {
+  const { t } = useI18n();
   return (
     <section className="mx-auto max-w-3xl px-6 py-10">
       <button
         onClick={onBack}
         className="font-mono text-xs text-mist transition hover:opacity-60"
       >
-        ← 返回列表
+        {t('blog.detailBack')}
       </button>
 
       {article.image && (
@@ -238,7 +242,7 @@ function ArticleDetail({
       )}
 
       <h1 className="mt-5 font-mondwest text-4xl font-semibold leading-tight tracking-tight text-[#051A24] md:text-5xl">
-        {article.title || '未命名文章'}
+        {article.title || t('blog.untitled')}
       </h1>
       <p className="mt-3 font-mono text-sm text-mist">{article.date}</p>
 
@@ -248,15 +252,15 @@ function ArticleDetail({
 
       <div className="mt-10 flex gap-3">
         <Button variant="secondary" onClick={() => onEdit(article)}>
-          编辑
+          {t('blog.edit')}
         </Button>
         <Button
           variant="secondary"
           onClick={() => {
-            if (confirm('确定删除这篇？')) onDelete(article.id);
+            if (confirm(t('blog.confirmDel'))) onDelete(article.id);
           }}
         >
-          删除
+          {t('blog.delete')}
         </Button>
       </div>
     </section>
@@ -273,6 +277,7 @@ function Editor({
   onSave: (a: Article) => void;
   onClose: () => void;
 }) {
+  const { t } = useI18n();
   const [draft, setDraft] = useState<Article>(article);
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -286,7 +291,7 @@ function Editor({
 
   function submit() {
     if (!draft.title.trim()) {
-      alert('请填写标题');
+      alert(t('blog.alertTitle'));
       return;
     }
     const excerpt = draft.excerpt.trim() || draft.content.trim().slice(0, 60);
@@ -306,18 +311,18 @@ function Editor({
         onClick={(e) => e.stopPropagation()}
       >
         <h2 className="mb-5 font-mondwest text-2xl font-semibold text-[#051A24]">
-          {article.id.startsWith('seed') || article.title ? '编辑文章' : '新文章'}
+          {article.id.startsWith('seed') || article.title ? t('blog.editorTitleEdit') : t('blog.editorTitleNew')}
         </h2>
 
-        <label className="block text-xs font-medium text-mist">标题</label>
+        <label className="block text-xs font-medium text-mist">{t('blog.f_title')}</label>
         <input
           className={inputCls}
           value={draft.title}
           onChange={(e) => setDraft({ ...draft, title: e.target.value })}
-          placeholder="给这篇笔记起个名字"
+          placeholder={t('blog.f_title_ph')}
         />
 
-        <label className="mt-4 block text-xs font-medium text-mist">日期</label>
+        <label className="mt-4 block text-xs font-medium text-mist">{t('blog.f_date')}</label>
         <input
           type="date"
           className={inputCls}
@@ -326,7 +331,7 @@ function Editor({
         />
 
         <label className="mt-4 block text-xs font-medium text-mist">
-          封面图（可选）
+          {t('blog.f_cover')}
         </label>
         <input
           ref={fileRef}
@@ -344,29 +349,29 @@ function Editor({
         )}
 
         <label className="mt-4 block text-xs font-medium text-mist">
-          摘要（可选，留空自动截取正文）
+          {t('blog.f_excerpt')}
         </label>
         <input
           className={inputCls}
           value={draft.excerpt}
           onChange={(e) => setDraft({ ...draft, excerpt: e.target.value })}
-          placeholder="一句话概括"
+          placeholder={t('blog.f_excerpt_ph')}
         />
 
-        <label className="mt-4 block text-xs font-medium text-mist">正文</label>
+        <label className="mt-4 block text-xs font-medium text-mist">{t('blog.f_body')}</label>
         <textarea
           className={`${inputCls} h-40 resize-y`}
           value={draft.content}
           onChange={(e) => setDraft({ ...draft, content: e.target.value })}
-          placeholder="写点什么……支持换行"
+          placeholder={t('blog.f_body_ph')}
         />
 
         <div className="mt-6 flex justify-end gap-3">
           <Button variant="secondary" onClick={onClose}>
-            取消
+            {t('blog.cancel')}
           </Button>
           <Button variant="primary" onClick={submit}>
-            保存
+            {t('blog.save')}
           </Button>
         </div>
       </div>

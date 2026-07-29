@@ -1,6 +1,7 @@
 import { useCallback, useRef, useState, type CSSProperties, type MouseEvent } from 'react';
 import { marqueeImages, whatsappUrl } from '../constants';
 import Button from './Button';
+import { useI18n } from '../i18n';
 
 interface Spawn {
   id: number;
@@ -13,6 +14,7 @@ interface Spawn {
 let spawnId = 0;
 
 export default function PartnerSection() {
+  const { t } = useI18n();
   const containerRef = useRef<HTMLDivElement>(null);
   const [spawns, setSpawns] = useState<Spawn[]>([]);
   const lastSpawn = useRef(0);
@@ -47,7 +49,7 @@ export default function PartnerSection() {
       >
         <div className="relative z-10">
           <h2 className="font-mondwest mb-12 text-[48px] text-[#0D212C] md:text-[64px] lg:text-[80px]">
-            Partner with us
+            {t('partner.heading')}
           </h2>
           <div className="flex justify-center">
             <Button variant="primary" href={whatsappUrl}>
@@ -56,7 +58,7 @@ export default function PartnerSection() {
                 alt=""
                 className="h-10 w-10 rounded-full object-cover"
               />
-              Start chat with Louis
+              {t('partner.cta')}
             </Button>
           </div>
         </div>

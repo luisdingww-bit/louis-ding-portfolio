@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { ArrowUpRight, Check } from 'lucide-react';
 import Button from './Button';
+import { useI18n } from '../i18n';
 
 export default function Footer() {
+  const { t } = useI18n();
   const [copied, setCopied] = useState(false);
 
   async function copyWechat() {
@@ -20,7 +22,7 @@ export default function Footer() {
       <div className="flex flex-col gap-10 md:flex-row md:items-start md:justify-between">
         <div>
           <Button variant="primary" href="#partner">
-            Start a chat
+            {t('footer.startChat')}
           </Button>
         </div>
 
@@ -33,20 +35,20 @@ export default function Footer() {
               rel="noreferrer"
               className="text-base text-[#051A24] transition hover:opacity-70"
             >
-              GitHub
+              {t('footer.github')}
             </a>
             <a
               href="mailto:luisdingww@gmail.com"
               className="text-base text-[#051A24] transition hover:opacity-70"
             >
-              Gmail
+              {t('footer.gmail')}
             </a>
             <button
               type="button"
               onClick={copyWechat}
               className="flex items-center gap-2 text-left text-base text-[#051A24] transition hover:opacity-70"
             >
-              <span>WeChat: louis__heree</span>
+              <span>{t('footer.wechat')}</span>
               {copied && <Check className="h-4 w-4 text-[#051A24]" />}
             </button>
           </div>

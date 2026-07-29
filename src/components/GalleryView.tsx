@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { marqueeImages } from '../constants';
+import { useI18n } from '../i18n';
 
 const WORKS_KEY = 'louis-gallery-works';
 const PHOTOS_KEY = 'louis-gallery-photos';
@@ -31,6 +32,7 @@ function handleRemove(setState: Setter, src: string) {
 }
 
 export default function GalleryView({ onBack }: { onBack: () => void }) {
+  const { t } = useI18n();
   const [tab, setTab] = useState<'works' | 'photos'>('works');
   const [works, setWorks] = useState<string[]>(() => load(WORKS_KEY, marqueeImages));
   const [photos, setPhotos] = useState<string[]>(() =>
@@ -66,15 +68,15 @@ export default function GalleryView({ onBack }: { onBack: () => void }) {
           onClick={onBack}
           className="font-mono text-xs text-mist transition hover:opacity-60"
         >
-          ← 返回首页
+          {t('gallery.back')}
         </button>
         <div className="mt-3 flex flex-wrap items-end justify-between gap-4">
           <h1 className="font-mondwest text-4xl font-semibold tracking-tight text-[#051A24] md:text-5xl">
-            画廊
+            {t('gallery.title')}
           </h1>
           <div className="flex gap-3">
-            {tabBtn('works', '个人作品')}
-            {tabBtn('photos', '个人照片')}
+            {tabBtn('works', t('gallery.tabWorks'))}
+            {tabBtn('photos', t('gallery.tabPhotos'))}
           </div>
         </div>
       </header>
@@ -126,13 +128,14 @@ function EditableGrid({
   onRemove: (src: string) => void;
   onOpen: (src: string) => void;
 }) {
+  const { t } = useI18n();
   const ref = useRef<HTMLInputElement>(null);
 
   return (
     <>
       {items.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-[#051A24]/15 py-20 text-center">
-          <p className="text-sm text-mist">还没有内容，点击右下角「+」添加。</p>
+          <p className="text-sm text-mist">{t('gallery.empty')}</p>
         </div>
       ) : (
         <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
@@ -152,7 +155,7 @@ function EditableGrid({
               </button>
               <button
                 onClick={() => {
-                  if (confirm('从画廊移除这张？')) onRemove(src);
+                  if (confirm(t('gallery.confirm'))) onRemove(src);
                 }}
                 aria-label="删除"
                 className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-white/90 text-sm text-red-600 opacity-0 shadow-secondary transition group-hover:opacity-100"

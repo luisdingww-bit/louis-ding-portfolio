@@ -1,5 +1,7 @@
 // Top navigation bar — entry points for About / Gallery / Blog (all in-site views).
-// Stays pinned to the top while scrolling.
+// Stays pinned to the top while scrolling. Includes EN / 中 language switch.
+import { useI18n } from '../i18n';
+
 export default function TopNav({
   onHome,
   onAbout,
@@ -11,6 +13,8 @@ export default function TopNav({
   onGallery: () => void;
   onBlog: () => void;
 }) {
+  const { lang, setLang, t } = useI18n();
+
   return (
     <header className="sticky top-0 z-40 w-full border-b border-[#051A24]/10 bg-white/90 backdrop-blur">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
@@ -21,25 +25,45 @@ export default function TopNav({
           LD
         </button>
 
-        <nav className="flex items-center gap-5 sm:gap-8">
+        <nav className="flex items-center gap-4 sm:gap-6">
           <button
             onClick={onAbout}
             className="font-mono text-sm text-[#051A24] transition hover:opacity-60"
           >
-            关于我
+            {t('nav.about')}
           </button>
           <button
             onClick={onGallery}
             className="font-mono text-sm text-[#051A24] transition hover:opacity-60"
           >
-            画廊
+            {t('nav.gallery')}
           </button>
           <button
             onClick={onBlog}
             className="font-mono text-sm text-[#051A24] transition hover:opacity-60"
           >
-            博客
+            {t('nav.blog')}
           </button>
+
+          {/* Language switch */}
+          <div className="ml-1 flex items-center gap-1 rounded-full border border-[#051A24]/15 p-0.5 text-xs">
+            <button
+              onClick={() => setLang('zh')}
+              className={`rounded-full px-2.5 py-1 transition ${
+                lang === 'zh' ? 'bg-[#051A24] text-white' : 'text-[#051A24] hover:opacity-70'
+              }`}
+            >
+              中
+            </button>
+            <button
+              onClick={() => setLang('en')}
+              className={`rounded-full px-2.5 py-1 transition ${
+                lang === 'en' ? 'bg-[#051A24] text-white' : 'text-[#051A24] hover:opacity-70'
+              }`}
+            >
+              EN
+            </button>
+          </div>
         </nav>
       </div>
     </header>
