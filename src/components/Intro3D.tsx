@@ -92,7 +92,11 @@ export default function Intro3D({ onDone }: { onDone: () => void }) {
 
   return (
     <div
-      className={`fixed inset-0 z-[10000] flex items-center justify-center bg-[#051A24] transition-opacity duration-700 ${
+      onClick={() => {
+        setHide(true);
+        window.setTimeout(onDone, 320);
+      }}
+      className={`fixed inset-0 z-[10000] flex cursor-pointer items-center justify-center bg-[#051A24] transition-opacity duration-700 ${
         hide ? 'pointer-events-none opacity-0' : 'opacity-100'
       }`}
     >
@@ -103,6 +107,11 @@ export default function Intro3D({ onDone }: { onDone: () => void }) {
         <LDBadge />
         <Blocks />
       </Canvas>
+      {!hide && (
+        <span className="pointer-events-none absolute bottom-8 left-1/2 -translate-x-1/2 text-[11px] uppercase tracking-[0.25em] text-white/60">
+          点击任意位置跳过 · Click to skip
+        </span>
+      )}
     </div>
   );
 }

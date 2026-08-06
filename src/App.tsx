@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, lazy, Suspense } from 'react';
+import { useState, lazy, Suspense } from 'react';
 import Button from './components/Button';
 import Reveal from './components/Reveal';
 import TopNav from './components/TopNav';
@@ -12,8 +12,9 @@ import BottomNav from './components/BottomNav';
 import BlogView from './components/BlogView';
 import GalleryView from './components/GalleryView';
 import AboutView from './components/AboutView';
-import { marqueeSlides, whatsappUrl } from './constants';
+import { whatsappUrl } from './constants';
 import CustomCursor from './components/CustomCursor';
+import WorksList from './components/WorksList';
 const Intro3D = lazy(() => import('./components/Intro3D'));
 import { useI18n } from './i18n';
 
@@ -90,109 +91,7 @@ function Hero() {
   );
 }
 
-function Marquee() {
-  const viewportRef = useRef<HTMLDivElement>(null);
-  const trackRef = useRef<HTMLDivElement>(null);
-  const offsetRef = useRef(0);
-  const halfWidthRef = useRef(0);
-  // pointer normalized x in [-1, 1] (left→right); null = pointer outside
-  const pointerXRef = useRef<number | null>(null);
-  const rafRef = useRef(0);
-  const lastRef = useRef(0);
-
-  const loop = [...marqueeSlides, ...marqueeSlides];
-
-  useEffect(() => {
-    const track = trackRef.current;
-    const viewport = viewportRef.current;
-    if (!track || !viewport) return;
-
-    const measure = () => {
-      halfWidthRef.current = track.scrollWidth / 2;
-    };
-    measure();
-    const imgs = Array.from(track.querySelectorAll('img'));
-    imgs.forEach((img) => img.addEventListener('load', measure));
-    window.addEventListener('resize', measure);
-
-    const baseSpeed = 55; // px/s, leftward drift
-
-    const tick = (now: number) => {
-      const dt = lastRef.current ? (now - lastRef.current) / 1000 : 0;
-      lastRef.current = now;
-      const half = halfWidthRef.current;
-
-      // pointer at center => pause; left => faster left; right => reverse right
-      const nx = pointerXRef.current;
-      const speed = nx === null ? baseSpeed : baseSpeed * (1 - nx);
-
-      offsetRef.current -= speed * dt;
-      if (half > 0) {
-        if (offsetRef.current <= -half) offsetRef.current += half;
-        else if (offsetRef.current > 0) offsetRef.current -= half;
-      }
-      track.style.transform = `translate3d(${offsetRef.current}px,0,0)`;
-      rafRef.current = requestAnimationFrame(tick);
-    };
-    rafRef.current = requestAnimationFrame(tick);
-
-    return () => {
-      cancelAnimationFrame(rafRef.current);
-      imgs.forEach((img) => img.removeEventListener('load', measure));
-      window.removeEventListener('resize', measure);
-    };
-  }, []);
-
-  const handleMove = (e: React.PointerEvent) => {
-    const rect = viewportRef.current?.getBoundingClientRect();
-    if (!rect) return;
-    pointerXRef.current = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-  };
-  const handleLeave = () => {
-    pointerXRef.current = null;
-  };
-
-  return (
-    <section id="gallery" className="mb-16 mt-16 scroll-mt-20 overflow-hidden md:mt-20">
-      <div
-        ref={viewportRef}
-        onPointerMove={handleMove}
-        onPointerLeave={handleLeave}
-        className="relative select-none"
-      >
-        <div
-          ref={trackRef}
-          className="flex w-max will-change-transform"
-          style={{ transform: 'translate3d(0,0,0)' }}
-        >
-          {loop.map((s, i) => (
-        <figure
-          key={i}
-          data-cursor-image={s.src}
-          data-cursor-label={s.title}
-          className="group relative mx-3 flex-none overflow-hidden rounded-2xl shadow-lg transition-transform duration-500 ease-out hover:z-10 hover:scale-[1.05] hover:shadow-2xl h-[280px] md:h-[500px]"
-        >
-              <img
-                src={s.src}
-                alt={s.title}
-                draggable={false}
-                className="h-full w-auto object-cover"
-              />
-              <figcaption className="pointer-events-none absolute inset-x-0 bottom-0 translate-y-2 bg-gradient-to-t from-black/75 via-black/25 to-transparent p-4 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
-                <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-white/70">
-                  {s.tag}
-                </div>
-                <div className="font-mondwest text-lg leading-tight text-white">
-                  {s.title}
-                </div>
-              </figcaption>
-            </figure>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
+// Marquee replaced by <WorksList /> (obys-style floating-thumbnail list).
 
 export default function App() {
   const [view, setView] = useState<'home' | 'about' | 'gallery' | 'blog'>('home');
@@ -239,7 +138,7 @@ export default function App() {
       {view === 'home' ? (
         <>
           <Hero />
-          <Marquee />
+          <WorksList />
           <TestimonialSection />
           <ExpertiseSection />
           <ProjectsSection />
