@@ -19,14 +19,21 @@ export default function CustomCursor() {
   const labelRef = useRef<HTMLSpanElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
 
+  // 1) Detect desktop (fine pointer) and enable. Mobile keeps native cursor.
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    // Desktop (fine pointer) only; otherwise keep the native cursor.
     if (!window.matchMedia('(pointer:fine)').matches) return;
     setEnabled(true);
+  }, []);
 
-    const ring = ringRef.current!;
-    const thumb = thumbRef.current!;
+  // 2) Cursor logic runs ONLY after enabled AND the refs are actually mounted,
+  //    so we never touch a null ref (which previously blank-screened the app).
+  useEffect(() => {
+    if (!enabled) return;
+    const ring = ringRef.current;
+    const thumb = thumbRef.current;
+    if (!ring || !thumb) return; // safety net
+
     let raf = 0;
     let mx = window.innerWidth / 2;
     let my = window.innerHeight / 2;
@@ -82,7 +89,7 @@ export default function CustomCursor() {
       cancelAnimationFrame(raf);
       root.style.cursor = '';
     };
-  }, []);
+  }, [enabled]);
 
   if (!enabled) return null;
 

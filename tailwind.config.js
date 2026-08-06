@@ -11,7 +11,7 @@ export default {
         frost: '#E0EBF0',
       },
       fontFamily: {
-        neue: ['PP Neue Montreal', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        neue: ['ui-sans-serif', 'system-ui', 'sans-serif'],
         mondwest: ['PP Mondwest', 'ui-serif', 'Georgia', 'serif'],
       },
       boxShadow: {

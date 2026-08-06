@@ -128,35 +128,52 @@ export default function App() {
   }
 
   return (
-    <main className="min-h-screen bg-white">
-      <CustomCursor />
-      {!introDone && (
-        <ErrorBoundary onError={handleIntroDone} fallback={null}>
-          <Suspense fallback={<div className="fixed inset-0 z-[10000] bg-[#051A24]" />}>
-            <Intro3D onDone={handleIntroDone} />
-          </Suspense>
-        </ErrorBoundary>
-      )}
-      <TopNav onHome={goHome} onAbout={goAbout} onGallery={goGallery} onBlog={goBlog} />
-      {view === 'home' ? (
-        <>
-          <Hero />
-          <WorksList />
-          <TestimonialSection />
-          <ExpertiseSection />
-          <ProjectsSection />
-          <PartnerSection />
-          <Footer />
-          <CopyrightBar />
-          <BottomNav />
-        </>
-      ) : view === 'about' ? (
-        <AboutView onBack={goHome} />
-      ) : view === 'gallery' ? (
-        <GalleryView onBack={goHome} />
-      ) : (
-        <BlogView onBack={goHome} />
-      )}
-    </main>
+    <ErrorBoundary
+      fallback={
+        <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-white px-6 text-center text-[#051A24]">
+          <h1 className="font-mondwest text-2xl">Something went wrong</h1>
+          <p className="max-w-sm text-sm text-[#5b6b7a]">
+            The page hit an unexpected error. Please refresh — your work is safe.
+          </p>
+          <button
+            onClick={() => window.location.reload()}
+            className="rounded-full border border-[#051A24]/20 px-5 py-2 text-sm font-medium transition-colors hover:bg-[#051A24] hover:text-white"
+          >
+            Reload
+          </button>
+        </div>
+      }
+    >
+      <main className="min-h-screen bg-white">
+        <CustomCursor />
+        {!introDone && (
+          <ErrorBoundary onError={handleIntroDone} fallback={null}>
+            <Suspense fallback={<div className="fixed inset-0 z-[10000] bg-[#051A24]" />}>
+              <Intro3D onDone={handleIntroDone} />
+            </Suspense>
+          </ErrorBoundary>
+        )}
+        <TopNav onHome={goHome} onAbout={goAbout} onGallery={goGallery} onBlog={goBlog} />
+        {view === 'home' ? (
+          <>
+            <Hero />
+            <WorksList />
+            <TestimonialSection />
+            <ExpertiseSection />
+            <ProjectsSection />
+            <PartnerSection />
+            <Footer />
+            <CopyrightBar />
+            <BottomNav />
+          </>
+        ) : view === 'about' ? (
+          <AboutView onBack={goHome} />
+        ) : view === 'gallery' ? (
+          <GalleryView onBack={goHome} />
+        ) : (
+          <BlogView onBack={goHome} />
+        )}
+      </main>
+    </ErrorBoundary>
   );
 }
