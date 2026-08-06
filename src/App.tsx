@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, lazy, Suspense } from 'react';
 import Button from './components/Button';
 import Reveal from './components/Reveal';
 import TopNav from './components/TopNav';
@@ -13,6 +13,8 @@ import BlogView from './components/BlogView';
 import GalleryView from './components/GalleryView';
 import AboutView from './components/AboutView';
 import { marqueeSlides, whatsappUrl } from './constants';
+import CustomCursor from './components/CustomCursor';
+const Intro3D = lazy(() => import('./components/Intro3D'));
 import { useI18n } from './i18n';
 
 /* ---------- Clean light intro (no video, no gradient effects) ---------- */
@@ -164,10 +166,12 @@ function Marquee() {
           style={{ transform: 'translate3d(0,0,0)' }}
         >
           {loop.map((s, i) => (
-            <figure
-              key={i}
-              className="group relative mx-3 flex-none overflow-hidden rounded-2xl shadow-lg transition-transform duration-500 ease-out hover:z-10 hover:scale-[1.05] hover:shadow-2xl h-[280px] md:h-[500px]"
-            >
+        <figure
+          key={i}
+          data-cursor-image={s.src}
+          data-cursor-label={s.title}
+          className="group relative mx-3 flex-none overflow-hidden rounded-2xl shadow-lg transition-transform duration-500 ease-out hover:z-10 hover:scale-[1.05] hover:shadow-2xl h-[280px] md:h-[500px]"
+        >
               <img
                 src={s.src}
                 alt={s.title}
@@ -192,6 +196,19 @@ function Marquee() {
 
 export default function App() {
   const [view, setView] = useState<'home' | 'about' | 'gallery' | 'blog'>('home');
+  const [introDone, setIntroDone] = useState(() => {
+    if (typeof window === 'undefined') return true;
+    if (!window.matchMedia('(pointer:fine)').matches) return true; // mobile: skip intro
+    return sessionStorage.getItem('introPlayed') === '1';
+  });
+  function handleIntroDone() {
+    try {
+      sessionStorage.setItem('introPlayed', '1');
+    } catch {
+      /* ignore */
+    }
+    setIntroDone(true);
+  }
 
   function goAbout() {
     window.scrollTo(0, 0);
@@ -212,6 +229,12 @@ export default function App() {
 
   return (
     <main className="min-h-screen bg-white">
+      <CustomCursor />
+      {!introDone && (
+        <Suspense fallback={<div className="fixed inset-0 z-[10000] bg-[#051A24]" />}>
+          <Intro3D onDone={handleIntroDone} />
+        </Suspense>
+      )}
       <TopNav onHome={goHome} onAbout={goAbout} onGallery={goGallery} onBlog={goBlog} />
       {view === 'home' ? (
         <>
