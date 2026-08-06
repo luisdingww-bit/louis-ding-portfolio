@@ -27,23 +27,9 @@ jobs:
         run: npm run build
         env:
           PAGES: 'true'
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
+      - name: Deploy to GitHub Pages (branch)
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          path: ./dist
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    # GitHub's Sept-2025 runner deprecates Node 20 and forces deploy-pages onto
-    # Node 24, where it mis-reads a freshly created deployment as "cancelled".
-    # Allowing the unsecure (but intended) Node 20 keeps the deploy green.
-    env:
-      ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+          force_orphan: true
