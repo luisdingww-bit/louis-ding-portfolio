@@ -1,7 +1,8 @@
-import { Canvas, useFrame } from '@react-three/fiber';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 /**
  * Opening WebGL moment (desktop only, mounted by App).
@@ -113,7 +114,6 @@ function BuildingShow({
   useFrame((state) => {
     const g = group.current;
     if (!g) return;
-    g.rotation.y = state.clock.elapsedTime * 0.18; // slow turntable orbit
     if (revealStart.current == null) revealStart.current = state.clock.elapsedTime;
     const t = state.clock.elapsedTime - revealStart.current;
     const p = Math.min(Math.max(t / REVEAL_DUR, 0), 1);
@@ -127,6 +127,48 @@ function BuildingShow({
       <primitive object={models[index]} />
     </group>
   );
+}
+
+/**
+ * Camera controls for the intro:
+ *  - RIGHT mouse button drag  -> orbit/rotate around the building
+ *  - mouse WHEEL              -> dolly in / out (zoom)
+ *  - LEFT mouse button        -> left free (used by the wrapper onClick to ENTER)
+ * A gentle autoRotate gives the "turntable" showcase feel and pauses while
+ * the user is actively dragging.
+ */
+function Controls() {
+  const { camera, gl } = useThree();
+  const ref = useRef<OrbitControls | null>(null);
+  useEffect(() => {
+    const controls = new OrbitControls(camera, gl.domElement);
+    controls.target.set(0, H * 0.5, 0);
+    controls.enablePan = false;
+    controls.enableZoom = true;
+    controls.enableRotate = true;
+    controls.autoRotate = true;
+    controls.autoRotateSpeed = 0.9;
+    controls.rotateSpeed = 0.9;
+    controls.zoomSpeed = 1.0;
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.08;
+    controls.minDistance = 3.2;
+    controls.maxDistance = 16;
+    // Map RIGHT -> rotate, MIDDLE -> dolly, LEFT -> null (free for click-to-enter).
+    controls.mouseButtons = {
+      LEFT: null as unknown as THREE.MOUSE,
+      MIDDLE: THREE.MOUSE.DOLLY,
+      RIGHT: THREE.MOUSE.ROTATE,
+    };
+    controls.update();
+    ref.current = controls;
+    return () => {
+      controls.dispose();
+      ref.current = null;
+    };
+  }, [camera, gl]);
+  useFrame(() => ref.current?.update());
+  return null;
 }
 
 export default function Intro3D({ onDone }: { onDone: () => void }) {
@@ -209,6 +251,7 @@ export default function Intro3D({ onDone }: { onDone: () => void }) {
   return (
     <div
       onClick={enter}
+      onContextMenu={(e) => e.preventDefault()}
       className={`fixed inset-0 z-[10000] flex cursor-pointer flex-col items-center justify-center bg-[#051A24] transition-opacity duration-700 ${
         hide ? 'pointer-events-none opacity-0' : 'opacity-100'
       }`}
@@ -228,6 +271,7 @@ export default function Intro3D({ onDone }: { onDone: () => void }) {
         <directionalLight position={[4, 6, 4]} intensity={1.15} />
         <directionalLight position={[-5, -2, -3]} intensity={0.5} color="#E8B04B" />
         <gridHelper args={[18, 18, '#1d4254', '#0e2433']} position={[0, 0, 0]} />
+        <Controls />
         {models && (
           <BuildingShow models={models} index={buildingIndex} clipPlane={clipPlane} />
         )}
@@ -253,8 +297,8 @@ export default function Intro3D({ onDone }: { onDone: () => void }) {
       </span>
 
       {/* Click to enter */}
-      <span className="pointer-events-none absolute bottom-8 left-1/2 -translate-x-1/2 text-[11px] uppercase tracking-[0.25em] text-white/60">
-        点击任意位置进入 · Click to enter
+      <span className="pointer-events-none absolute bottom-8 left-1/2 -translate-x-1/2 text-center text-[11px] uppercase tracking-[0.25em] text-white/60">
+        左键点击进入 · 右键拖动旋转 · 滚轮缩放
       </span>
     </div>
   );
