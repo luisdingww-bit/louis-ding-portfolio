@@ -118,7 +118,7 @@ export default function SnapPrintShowcase() {
 
           {/* CTA */}
           <a
-            href="https://wa.me/8618050020614"
+            href="https://snapprint.surge.sh/"
             target="_blank"
             rel="noreferrer"
             style={{
