@@ -59,24 +59,6 @@ body {
   opacity: 0;
 }
 
-/* ---------- Infinite marquee ---------- */
-@keyframes marquee {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
-}
-.animate-marquee {
-  animation: marquee 30s linear infinite;
-}
-@media (max-width: 767px) {
-  .animate-marquee {
-    animation-duration: 10s;
-  }
-}
-
 /* ---------- Partner mouse-trail thumbnail ---------- */
 @keyframes partnerFade {
   0% {
