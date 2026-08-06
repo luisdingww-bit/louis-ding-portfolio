@@ -53,7 +53,7 @@ function Hero() {
           <img
             src={import.meta.env.BASE_URL + 'favicon.svg'}
             alt="Louis Ding"
-            className="h-28 w-28 rounded-full shadow-md ring-1 ring-[#051A24]/10"
+            className="h-28 w-28 rounded-full shadow-lg"
           />
         </Reveal>
 
