@@ -58,15 +58,36 @@ export default function GalleryView({ onBack }: { onBack: () => void }) {
 
   const current = lightboxIndex !== null ? visible[lightboxIndex] : null;
 
+  const [zoom, setZoom] = useState(false);
+  const [pan, setPan] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [dragging, setDragging] = useState(false);
+  const dragRef = useRef<{ x: number; y: number; px: number; py: number } | null>(null);
+  const movedRef = useRef(false);
+
+  function go(delta: number) {
+    setLightboxIndex((i) => (i === null ? i : (i + delta + visible.length) % visible.length));
+    setZoom(false);
+    setPan({ x: 0, y: 0 });
+  }
+
+  function toggleZoom() {
+    setZoom((z) => !z);
+    setPan({ x: 0, y: 0 });
+  }
+
+  function closeLightbox() {
+    setLightboxIndex(null);
+    setZoom(false);
+    setPan({ x: 0, y: 0 });
+  }
+
   // Lightbox keyboard: ←/→ navigate, Esc close
   useEffect(() => {
     if (lightboxIndex === null) return;
     function onKey(e: KeyboardEvent) {
-      if (e.key === 'Escape') setLightboxIndex(null);
-      else if (e.key === 'ArrowLeft')
-        setLightboxIndex((i) => (i === null ? i : (i - 1 + visible.length) % visible.length));
-      else if (e.key === 'ArrowRight')
-        setLightboxIndex((i) => (i === null ? i : (i + 1) % visible.length));
+      if (e.key === 'Escape') closeLightbox();
+      else if (e.key === 'ArrowLeft') go(-1);
+      else if (e.key === 'ArrowRight') go(1);
     }
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
@@ -198,12 +219,12 @@ export default function GalleryView({ onBack }: { onBack: () => void }) {
       {current && (
         <div
           className="fixed inset-0 z-[60] flex items-center justify-center bg-black/85 p-4"
-          onClick={() => setLightboxIndex(null)}
+          onClick={closeLightbox}
         >
           <button
             onClick={(e) => {
               e.stopPropagation();
-              setLightboxIndex(null);
+              closeLightbox();
             }}
             aria-label="关闭"
             className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-2xl text-white transition hover:bg-white/20"
@@ -213,7 +234,7 @@ export default function GalleryView({ onBack }: { onBack: () => void }) {
           <button
             onClick={(e) => {
               e.stopPropagation();
-              setLightboxIndex((i) => (i === null ? i : (i - 1 + visible.length) % visible.length));
+              go(-1);
             }}
             aria-label={t('gallery.prev')}
             className="absolute left-3 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-3xl text-white transition hover:bg-white/20 md:left-6"
@@ -223,7 +244,7 @@ export default function GalleryView({ onBack }: { onBack: () => void }) {
           <button
             onClick={(e) => {
               e.stopPropagation();
-              setLightboxIndex((i) => (i === null ? i : (i + 1) % visible.length));
+              go(1);
             }}
             aria-label={t('gallery.next')}
             className="absolute right-3 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-3xl text-white transition hover:bg-white/20 md:right-6"
@@ -231,11 +252,63 @@ export default function GalleryView({ onBack }: { onBack: () => void }) {
             ›
           </button>
 
-          <div className="flex max-h-[88vh] flex-col items-center gap-3" onClick={(e) => e.stopPropagation()}>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleZoom();
+            }}
+            aria-label={zoom ? t('gallery.zoomOut') : t('gallery.zoomIn')}
+            className="absolute right-4 top-16 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-xl text-white transition hover:bg-white/20"
+          >
+            {zoom ? '⤡' : '⤢'}
+          </button>
+
+          <div
+            className="flex max-h-[88vh] flex-col items-center gap-3"
+            onClick={(e) => e.stopPropagation()}
+          >
             <img
               src={current.url}
               alt={current.title}
-              className="max-h-[78vh] max-w-full rounded-2xl object-contain"
+              draggable={false}
+              onClick={() => {
+                if (movedRef.current) {
+                  movedRef.current = false;
+                  return;
+                }
+                toggleZoom();
+              }}
+              onMouseDown={(e) => {
+                if (!zoom) return;
+                dragRef.current = { x: e.clientX, y: e.clientY, px: pan.x, py: pan.y };
+                setDragging(true);
+              }}
+              onMouseMove={(e) => {
+                if (!dragRef.current) return;
+                movedRef.current = true;
+                setPan({
+                  x: dragRef.current.px + (e.clientX - dragRef.current.x),
+                  y: dragRef.current.py + (e.clientY - dragRef.current.y),
+                });
+              }}
+              onMouseUp={() => {
+                dragRef.current = null;
+                setDragging(false);
+              }}
+              onMouseLeave={() => {
+                dragRef.current = null;
+                setDragging(false);
+              }}
+              style={{
+                transform: zoom ? `translate(${pan.x}px, ${pan.y}px) scale(2.4)` : undefined,
+                transition: dragging ? 'none' : 'transform .18s ease-out',
+                cursor: zoom ? (dragging ? 'grabbing' : 'grab') : 'zoom-in',
+                maxHeight: '78vh',
+                maxWidth: '100%',
+                borderRadius: 16,
+                objectFit: 'contain',
+                userSelect: 'none',
+              }}
             />
             {current.title && (
               <p className="text-sm font-medium text-white">{current.title}</p>

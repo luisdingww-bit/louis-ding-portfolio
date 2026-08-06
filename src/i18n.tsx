@@ -103,6 +103,8 @@ export const dict: Record<string, Entry> = {
   'gallery.removeBtn': { en: 'Remove', zh: '移除' },
   'gallery.prev': { en: 'Previous', zh: '上一张' },
   'gallery.next': { en: 'Next', zh: '下一张' },
+  'gallery.zoomIn': { en: 'Zoom in', zh: '放大' },
+  'gallery.zoomOut': { en: 'Reset zoom', zh: '恢复' },
 
   // ── Blog ──
   'blog.back': { en: '← Back', zh: '← 返回首页' },
