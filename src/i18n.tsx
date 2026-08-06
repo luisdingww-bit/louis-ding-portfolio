@@ -95,6 +95,14 @@ export const dict: Record<string, Entry> = {
   'gallery.fieldCategory': { en: 'Category', zh: '分类' },
   'gallery.cancel': { en: 'Cancel', zh: '取消' },
   'gallery.addBtn': { en: 'Add', zh: '添加' },
+  'gallery.confirmTitle': { en: 'Remove this?', zh: '移除这张？' },
+  'gallery.confirmText': {
+    en: 'This will be removed from the gallery.',
+    zh: '它将从画廊中移除，且无法撤销。',
+  },
+  'gallery.removeBtn': { en: 'Remove', zh: '移除' },
+  'gallery.prev': { en: 'Previous', zh: '上一张' },
+  'gallery.next': { en: 'Next', zh: '下一张' },
 
   // ── Blog ──
   'blog.back': { en: '← Back', zh: '← 返回首页' },

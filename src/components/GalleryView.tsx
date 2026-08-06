@@ -35,8 +35,9 @@ export default function GalleryView({ onBack }: { onBack: () => void }) {
   const [tab, setTab] = useState<GalleryKind>('works');
   const [items, setItems] = useState<GalleryItem[]>([]);
   const [filter, setFilter] = useState<string>('all');
-  const [lightbox, setLightbox] = useState<GalleryItem | null>(null);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [uploadOpen, setUploadOpen] = useState(false);
+  const [pendingDelete, setPendingDelete] = useState<GalleryItem | null>(null);
 
   useEffect(() => {
     let alive = true;
@@ -55,17 +56,38 @@ export default function GalleryView({ onBack }: { onBack: () => void }) {
       ? items.filter((it) => it.category === filter)
       : items;
 
+  const current = lightboxIndex !== null ? visible[lightboxIndex] : null;
+
+  // Lightbox keyboard: ←/→ navigate, Esc close
+  useEffect(() => {
+    if (lightboxIndex === null) return;
+    function onKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') setLightboxIndex(null);
+      else if (e.key === 'ArrowLeft')
+        setLightboxIndex((i) => (i === null ? i : (i - 1 + visible.length) % visible.length));
+      else if (e.key === 'ArrowRight')
+        setLightboxIndex((i) => (i === null ? i : (i + 1) % visible.length));
+    }
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [lightboxIndex, visible.length]);
+
   async function handleAdd(file: File, title: string, category: string) {
     const blob = await compressFile(file);
     const item = await addItem({ kind: tab, title, category, blob });
     setItems((prev) => [item, ...prev]);
   }
 
-  function handleRemove(item: GalleryItem) {
-    if (!confirm(t('gallery.confirm'))) return;
+  function requestRemove(item: GalleryItem) {
+    setPendingDelete(item);
+  }
+
+  function doRemove(item: GalleryItem) {
     if (!item.remote) URL.revokeObjectURL(item.url);
     removeItem(item.id);
     setItems((prev) => prev.filter((p) => p.id !== item.id));
+    if (current && current.id === item.id) setLightboxIndex(null);
+    setPendingDelete(null);
   }
 
   const tabBtn = (key: GalleryKind, label: string) => (
@@ -128,12 +150,12 @@ export default function GalleryView({ onBack }: { onBack: () => void }) {
         />
       ) : (
         <div className="columns-2 gap-4 md:columns-3">
-          {visible.map((it) => (
+          {visible.map((it, idx) => (
             <div
               key={it.id}
               className="group relative mb-4 break-inside-avoid overflow-hidden rounded-2xl bg-[#F6FCFF] shadow-secondary"
             >
-              <button onClick={() => setLightbox(it)} className="block w-full">
+              <button onClick={() => setLightboxIndex(idx)} className="block w-full">
                 <img
                   src={it.url}
                   alt={it.title}
@@ -154,7 +176,7 @@ export default function GalleryView({ onBack }: { onBack: () => void }) {
                 </div>
               )}
               <button
-                onClick={() => handleRemove(it)}
+                onClick={() => requestRemove(it)}
                 aria-label="删除"
                 className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-white/90 text-sm text-red-600 opacity-0 shadow-secondary transition group-hover:opacity-100"
               >
@@ -173,20 +195,65 @@ export default function GalleryView({ onBack }: { onBack: () => void }) {
         +
       </button>
 
-      {lightbox && (
+      {current && (
         <div
-          className="fixed inset-0 z-[60] flex flex-col items-center justify-center gap-3 bg-black/80 p-4"
-          onClick={() => setLightbox(null)}
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/85 p-4"
+          onClick={() => setLightboxIndex(null)}
         >
-          <img
-            src={lightbox.url}
-            alt={lightbox.title}
-            className="max-h-[80vh] max-w-full rounded-2xl object-contain"
-          />
-          {lightbox.title && (
-            <p className="text-sm text-white/80">{lightbox.title}</p>
-          )}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setLightboxIndex(null);
+            }}
+            aria-label="关闭"
+            className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-2xl text-white transition hover:bg-white/20"
+          >
+            ×
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setLightboxIndex((i) => (i === null ? i : (i - 1 + visible.length) % visible.length));
+            }}
+            aria-label={t('gallery.prev')}
+            className="absolute left-3 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-3xl text-white transition hover:bg-white/20 md:left-6"
+          >
+            ‹
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setLightboxIndex((i) => (i === null ? i : (i + 1) % visible.length));
+            }}
+            aria-label={t('gallery.next')}
+            className="absolute right-3 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-3xl text-white transition hover:bg-white/20 md:right-6"
+          >
+            ›
+          </button>
+
+          <div className="flex max-h-[88vh] flex-col items-center gap-3" onClick={(e) => e.stopPropagation()}>
+            <img
+              src={current.url}
+              alt={current.title}
+              className="max-h-[78vh] max-w-full rounded-2xl object-contain"
+            />
+            {current.title && (
+              <p className="text-sm font-medium text-white">{current.title}</p>
+            )}
+            <p className="text-xs text-white/50">
+              {lightboxIndex! + 1} / {visible.length}
+            </p>
+          </div>
         </div>
+      )}
+
+      {pendingDelete && (
+        <ConfirmDialog
+          title={t('gallery.confirmTitle')}
+          text={t('gallery.confirmText')}
+          onCancel={() => setPendingDelete(null)}
+          onConfirm={() => doRemove(pendingDelete)}
+        />
       )}
 
       {uploadOpen && (
@@ -236,6 +303,48 @@ function EmptyState({ text }: { text: string }) {
   );
 }
 
+function ConfirmDialog({
+  title,
+  text,
+  onCancel,
+  onConfirm,
+}: {
+  title: string;
+  text: string;
+  onCancel: () => void;
+  onConfirm: () => void;
+}) {
+  const { t } = useI18n();
+  return (
+    <div
+      className="fixed inset-0 z-[80] flex items-center justify-center bg-black/60 p-4"
+      onClick={onCancel}
+    >
+      <div
+        className="w-full max-w-xs rounded-3xl bg-white p-6 text-center shadow-primary"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h3 className="font-mondwest text-xl font-semibold text-[#051A24]">{title}</h3>
+        <p className="mt-2 text-sm text-[#051A24]/60">{text}</p>
+        <div className="mt-6 flex justify-center gap-3">
+          <button
+            onClick={onCancel}
+            className="rounded-full px-5 py-2 text-sm font-medium text-[#051A24]/70 transition hover:opacity-70"
+          >
+            {t('gallery.cancel')}
+          </button>
+          <button
+            onClick={onConfirm}
+            className="rounded-full bg-red-600 px-5 py-2 text-sm font-medium text-white transition hover:scale-105"
+          >
+            {t('gallery.removeBtn')}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function UploadModal({
   kind,
   onClose,
@@ -246,17 +355,19 @@ function UploadModal({
   onAdd: (file: File, title: string, category: string) => void;
 }) {
   const { t } = useI18n();
-  const [file, setFile] = useState<File | null>(null);
+  const [files, setFiles] = useState<File[]>([]);
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState('other');
   const [busy, setBusy] = useState(false);
   const ref = useRef<HTMLInputElement>(null);
 
   async function submit() {
-    if (!file) return;
+    if (files.length === 0) return;
     setBusy(true);
     try {
-      await onAdd(file, title.trim(), kind === 'works' ? category : '');
+      for (let i = 0; i < files.length; i++) {
+        await onAdd(files[i], i === 0 ? title.trim() : '', kind === 'works' ? category : '');
+      }
       onClose();
     } finally {
       setBusy(false);
@@ -280,14 +391,17 @@ function UploadModal({
           onClick={() => ref.current?.click()}
           className="mt-4 flex w-full items-center justify-center rounded-xl border border-dashed border-[#051A24]/25 py-6 text-sm text-[#051A24]/60 transition hover:border-[#051A24]/50"
         >
-          {file ? file.name : t('gallery.pickImage')}
+          {files.length === 0
+            ? t('gallery.pickImage')
+            : `${files.length} 张已选`}
         </button>
         <input
           ref={ref}
           type="file"
           accept="image/*"
+          multiple
           className="hidden"
-          onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+          onChange={(e) => setFiles(Array.from(e.target.files ?? []))}
         />
 
         <label className="mt-4 block text-xs font-medium text-[#051A24]/70">
@@ -328,7 +442,7 @@ function UploadModal({
           </button>
           <button
             onClick={submit}
-            disabled={!file || busy}
+            disabled={files.length === 0 || busy}
             className="rounded-full bg-[#051A24] px-6 py-2 text-sm font-medium text-white shadow-primary transition hover:scale-105 disabled:cursor-not-allowed disabled:opacity-40"
           >
             {busy ? '…' : t('gallery.addBtn')}
