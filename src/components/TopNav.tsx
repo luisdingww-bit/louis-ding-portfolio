@@ -20,9 +20,14 @@ export default function TopNav({
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
         <button
           onClick={onHome}
-          className="font-mondwest text-2xl font-semibold tracking-tight text-[#051A24]"
+          aria-label="Louis Ding — home"
+          className="flex items-center rounded-full transition hover:opacity-80"
         >
-          LD
+          <img
+            src={import.meta.env.BASE_URL + 'favicon.svg'}
+            alt="LD"
+            className="h-9 w-9 rounded-full shadow-sm ring-1 ring-[#051A24]/10"
+          />
         </button>
 
         <nav className="flex items-center gap-4 sm:gap-6">
