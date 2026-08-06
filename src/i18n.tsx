@@ -74,6 +74,27 @@ export const dict: Record<string, Entry> = {
     zh: '还没有内容，点击右下角「+」添加。',
   },
   'gallery.confirm': { en: 'Remove this from the gallery?', zh: '从画廊移除这张？' },
+  'gallery.catAll': { en: 'All', zh: '全部' },
+  'gallery.cat.arch': { en: 'Architecture', zh: '建筑' },
+  'gallery.cat.3dprint': { en: '3D Printing', zh: '3D打印' },
+  'gallery.cat.render': { en: 'Rendering', zh: '渲染表现' },
+  'gallery.cat.computational': { en: 'Computational', zh: '计算设计' },
+  'gallery.cat.other': { en: 'Other', zh: '其他' },
+  'gallery.emptyWorks': {
+    en: 'No works yet — tap “+” to add your first piece.',
+    zh: '还没有作品，点击「+」添加第一件吧。',
+  },
+  'gallery.emptyPhotos': {
+    en: 'No photos yet — tap “+” to add one.',
+    zh: '还没有照片，点击「+」添加一张吧。',
+  },
+  'gallery.upload': { en: 'Add to gallery', zh: '添加到画廊' },
+  'gallery.pickImage': { en: 'Tap to choose an image', zh: '点击选择图片' },
+  'gallery.fieldTitle': { en: 'Title', zh: '标题' },
+  'gallery.fieldTitlePh': { en: 'Optional', zh: '选填' },
+  'gallery.fieldCategory': { en: 'Category', zh: '分类' },
+  'gallery.cancel': { en: 'Cancel', zh: '取消' },
+  'gallery.addBtn': { en: 'Add', zh: '添加' },
 
   // ── Blog ──
   'blog.back': { en: '← Back', zh: '← 返回首页' },

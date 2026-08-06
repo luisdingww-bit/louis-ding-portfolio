@@ -11,3 +11,5 @@ dist
 vite.config.js
 vite.config.d.ts
 vite.config.js.timestamp-*.mjs
+
+dist-tmp
