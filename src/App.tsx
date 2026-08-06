@@ -50,12 +50,11 @@ function Hero() {
         </Reveal>
 
         <Reveal delay={0.2} style={{ marginBottom: '8px' }}>
-          <span className="font-mondwest" style={{
-            display: 'block', fontSize: 'clamp(28px,4vw,44px)', fontWeight: 700,
-            lineHeight: 1.06, letterSpacing: '-0.02em', color: '#051A24',
-          }}>
-            LD
-          </span>
+          <img
+            src={import.meta.env.BASE_URL + 'favicon.svg'}
+            alt="Louis Ding"
+            className="h-28 w-28 rounded-full shadow-md ring-1 ring-[#051A24]/10"
+          />
         </Reveal>
 
         <Reveal delay={0.3}>
