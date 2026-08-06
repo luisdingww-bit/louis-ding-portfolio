@@ -15,6 +15,7 @@ import AboutView from './components/AboutView';
 import { whatsappUrl } from './constants';
 import CustomCursor from './components/CustomCursor';
 import WorksList from './components/WorksList';
+import ErrorBoundary from './components/ErrorBoundary';
 const Intro3D = lazy(() => import('./components/Intro3D'));
 import { useI18n } from './i18n';
 
@@ -130,9 +131,11 @@ export default function App() {
     <main className="min-h-screen bg-white">
       <CustomCursor />
       {!introDone && (
-        <Suspense fallback={<div className="fixed inset-0 z-[10000] bg-[#051A24]" />}>
-          <Intro3D onDone={handleIntroDone} />
-        </Suspense>
+        <ErrorBoundary onError={handleIntroDone} fallback={null}>
+          <Suspense fallback={<div className="fixed inset-0 z-[10000] bg-[#051A24]" />}>
+            <Intro3D onDone={handleIntroDone} />
+          </Suspense>
+        </ErrorBoundary>
       )}
       <TopNav onHome={goHome} onAbout={goAbout} onGallery={goGallery} onBlog={goBlog} />
       {view === 'home' ? (

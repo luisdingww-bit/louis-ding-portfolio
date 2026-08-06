@@ -1,13 +1,16 @@
 import { Canvas, useFrame } from '@react-three/fiber';
-import { Float, RoundedBox } from '@react-three/drei';
 import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 
 /**
  * Opening WebGL moment (desktop only, mounted by App).
  * Phase 1 (0–1.6s): an abstract "LD" badge forms in — scales up + settles rotation.
- * Phase 2: architectural blocks drift in and float around it.
+ * Phase 2: architectural blocks drift and float around it.
  * Phase 3 (~4.2s): the overlay fades; at ~5s onDone() hands control back to the site.
+ *
+ * Built with plain three.js primitives (NO drei) to keep the runtime failure
+ * surface minimal. The App-level ErrorBoundary + the WebGL capability check
+ * below guarantee the page can never blank-screen from a 3D failure.
  */
 
 function LDBadge() {
@@ -25,16 +28,19 @@ function LDBadge() {
   return (
     <group ref={group}>
       {/* L */}
-      <RoundedBox args={[0.26, 1.4, 0.26]} radius={0.05} smoothness={4} position={[-0.75, 0, 0]}>
+      <mesh position={[-0.75, 0, 0]}>
+        <boxGeometry args={[0.26, 1.4, 0.26]} />
         <meshStandardMaterial color="#f4f4f2" />
-      </RoundedBox>
-      <RoundedBox args={[0.85, 0.26, 0.26]} radius={0.05} smoothness={4} position={[-0.5, -0.7, 0]}>
+      </mesh>
+      <mesh position={[-0.5, -0.7, 0]}>
+        <boxGeometry args={[0.85, 0.26, 0.26]} />
         <meshStandardMaterial color="#f4f4f2" />
-      </RoundedBox>
+      </mesh>
       {/* D */}
-      <RoundedBox args={[0.26, 1.4, 0.26]} radius={0.05} smoothness={4} position={[0.5, 0, 0]}>
+      <mesh position={[0.5, 0, 0]}>
+        <boxGeometry args={[0.26, 1.4, 0.26]} />
         <meshStandardMaterial color="#f4f4f2" />
-      </RoundedBox>
+      </mesh>
       <mesh position={[0.8, 0, 0]} rotation={[0, 0, -Math.PI / 2]}>
         <torusGeometry args={[0.5, 0.18, 16, 32, Math.PI]} />
         <meshStandardMaterial color="#f4f4f2" />
@@ -43,19 +49,49 @@ function LDBadge() {
   );
 }
 
+interface BlockData {
+  pos: [number, number, number];
+  size: [number, number, number];
+  rot: number;
+  accent: boolean;
+}
+
+function Block({ pos, size, rot, accent }: BlockData) {
+  const ref = useRef<THREE.Mesh>(null);
+  const phase = useRef(Math.random() * Math.PI * 2);
+  useFrame((state) => {
+    const m = ref.current;
+    if (!m) return;
+    const t = state.clock.elapsedTime;
+    m.position.y = pos[1] + Math.sin(t * 0.8 + phase.current) * 0.25;
+    m.rotation.x = rot + t * 0.15;
+    m.rotation.y = rot + t * 0.2;
+  });
+  return (
+    <mesh ref={ref} position={pos} rotation={[rot, rot, 0]}>
+      <boxGeometry args={size} />
+      <meshStandardMaterial
+        color={accent ? '#E8B04B' : '#cdd6dc'}
+        roughness={0.6}
+        metalness={0.1}
+      />
+    </mesh>
+  );
+}
+
 function Blocks() {
-  const data = useRef(
+  const data = useRef<BlockData[]>(
     Array.from({ length: 14 }, () => ({
       pos: [
         (Math.random() - 0.5) * 9,
         (Math.random() - 0.5) * 5,
         (Math.random() - 0.5) * 4 - 1,
-      ] as [number, number, number],
+      ],
       size: [
         0.4 + Math.random() * 0.7,
         0.4 + Math.random() * 0.7,
         0.4 + Math.random() * 0.7,
-      ] as [number, number, number],
+      ],
       rot: Math.random() * Math.PI,
       accent: Math.random() > 0.72,
     })),
@@ -64,15 +100,7 @@ function Blocks() {
   return (
     <>
       {data.map((b, i) => (
-        <Float key={i} speed={1.2 + Math.random()} rotationIntensity={0.8} floatIntensity={1.1}>
-          <RoundedBox args={b.size} radius={0.04} smoothness={3} position={b.pos} rotation={[b.rot, b.rot, 0]}>
-            <meshStandardMaterial
-              color={b.accent ? '#E8B04B' : '#cdd6dc'}
-              roughness={0.6}
-              metalness={0.1}
-            />
-          </RoundedBox>
-        </Float>
+        <Block key={i} {...b} />
       ))}
     </>
   );
@@ -82,6 +110,18 @@ export default function Intro3D({ onDone }: { onDone: () => void }) {
   const [hide, setHide] = useState(false);
 
   useEffect(() => {
+    // Guard: if WebGL is unavailable, skip the intro entirely (no crash).
+    try {
+      const c = document.createElement('canvas');
+      const gl = c.getContext('webgl2') || c.getContext('webgl');
+      if (!gl) {
+        onDone();
+        return;
+      }
+    } catch {
+      onDone();
+      return;
+    }
     const t1 = setTimeout(() => setHide(true), 4200);
     const t2 = setTimeout(() => onDone(), 5000);
     return () => {
