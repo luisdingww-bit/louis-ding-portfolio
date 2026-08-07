@@ -35,7 +35,7 @@ export const landmarks: Landmark[] = [
     lat: 39.9163,
     lon: 116.3972,
     year: '1420',
-    img: `${IMG_BASE}/forbidden-city.png`,
+    img: `${IMG_BASE}/forbidden-city.webp`,
     watermark: 'PALACE',
     title: 'THE PALACE MUSEUM',
     annotations: [
@@ -55,7 +55,7 @@ export const landmarks: Landmark[] = [
     lat: 39.8822,
     lon: 116.4066,
     year: '1420',
-    img: `${IMG_BASE}/temple-of-heaven.png`,
+    img: `${IMG_BASE}/temple-of-heaven.webp`,
     watermark: 'TEMPLE OF HEAVEN',
     title: 'TEMPLE OF HEAVEN',
     annotations: [
@@ -73,7 +73,7 @@ export const landmarks: Landmark[] = [
     lat: 22.2778,
     lon: 114.1769,
     year: 1990,
-    img: `${IMG_BASE}/bank-of-china-tower.png`,
+    img: `${IMG_BASE}/bank-of-china-tower.webp`,
     watermark: 'BANK OF CHINA',
     title: 'BANK OF CHINA TOWER',
     annotations: [
@@ -91,7 +91,7 @@ export const landmarks: Landmark[] = [
     lat: 25.0340,
     lon: 121.5645,
     year: 2004,
-    img: `${IMG_BASE}/taipei-101.png`,
+    img: `${IMG_BASE}/taipei-101.webp`,
     watermark: 'TAIPEI 101',
     title: 'TAIPEI 101',
     annotations: [
@@ -109,7 +109,7 @@ export const landmarks: Landmark[] = [
     lat: 40.7484,
     lon: -73.9857,
     year: 1931,
-    img: `${IMG_BASE}/empire-state-building.png`,
+    img: `${IMG_BASE}/empire-state-building.webp`,
     watermark: 'EMPIRE STATE',
     title: 'EMPIRE STATE BUILDING',
     annotations: [
@@ -127,7 +127,7 @@ export const landmarks: Landmark[] = [
     lat: 41.8902,
     lon: 12.4922,
     year: '80 AD',
-    img: `${IMG_BASE}/colosseum.png`,
+    img: `${IMG_BASE}/colosseum.webp`,
     watermark: 'COLOSSEUM',
     title: 'THE COLOSSEUM',
     annotations: [
@@ -145,7 +145,7 @@ export const landmarks: Landmark[] = [
     lat: 48.8584,
     lon: 2.2945,
     year: 1889,
-    img: `${IMG_BASE}/eiffel-tower.png`,
+    img: `${IMG_BASE}/eiffel-tower.webp`,
     watermark: 'EIFFEL',
     title: 'TOUR EIFFEL',
     annotations: [
@@ -163,7 +163,7 @@ export const landmarks: Landmark[] = [
     lat: 29.9792,
     lon: 31.1342,
     year: '2560 BC',
-    img: `${IMG_BASE}/great-pyramid.png`,
+    img: `${IMG_BASE}/great-pyramid.webp`,
     watermark: 'PYRAMID',
     title: 'GREAT PYRAMID OF GIZA',
     annotations: [
@@ -181,7 +181,7 @@ export const landmarks: Landmark[] = [
     lat: -33.8568,
     lon: 151.2153,
     year: 1973,
-    img: `${IMG_BASE}/sydney-opera-house.png`,
+    img: `${IMG_BASE}/sydney-opera-house.webp`,
     watermark: 'OPERA HOUSE',
     title: 'SYDNEY OPERA HOUSE',
     annotations: [
@@ -199,7 +199,7 @@ export const landmarks: Landmark[] = [
     lat: 27.1751,
     lon: 78.0421,
     year: 1653,
-    img: `${IMG_BASE}/taj-mahal.png`,
+    img: `${IMG_BASE}/taj-mahal.webp`,
     watermark: 'TAJ MAHAL',
     title: 'TAJ MAHAL',
     annotations: [
@@ -217,7 +217,7 @@ export const landmarks: Landmark[] = [
     lat: 40.4319,
     lon: 116.5704,
     year: '221 BC',
-    img: `${IMG_BASE}/great-wall.png`,
+    img: `${IMG_BASE}/great-wall.webp`,
     watermark: 'GREAT WALL',
     title: 'THE GREAT WALL',
     annotations: [
@@ -235,7 +235,7 @@ export const landmarks: Landmark[] = [
     lat: 43.723,
     lon: 10.3966,
     year: 1372,
-    img: `${IMG_BASE}/leaning-tower-of-pisa.png`,
+    img: `${IMG_BASE}/leaning-tower-of-pisa.webp`,
     watermark: 'PISA',
     title: 'LEANING TOWER OF PISA',
     annotations: [
@@ -253,7 +253,7 @@ export const landmarks: Landmark[] = [
     lat: 25.1972,
     lon: 55.2744,
     year: 2010,
-    img: `${IMG_BASE}/burj-khalifa.png`,
+    img: `${IMG_BASE}/burj-khalifa.webp`,
     watermark: 'BURJ KHALIFA',
     title: 'BURJ KHALIFA',
     annotations: [
@@ -271,7 +271,7 @@ export const landmarks: Landmark[] = [
     lat: 35.0394,
     lon: 135.7292,
     year: 1397,
-    img: `${IMG_BASE}/kinkaku-ji.png`,
+    img: `${IMG_BASE}/kinkaku-ji.webp`,
     watermark: 'KINKAKU-JI',
     title: 'KINKAKU-JI',
     annotations: [
