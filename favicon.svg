@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="LD">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="36%" r="78%">
+      <stop offset="0%" stop-color="#0c2c3a"/>
+      <stop offset="100%" stop-color="#051A24"/>
+    </radialGradient>
+    <linearGradient id="front" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F8CE68"/>
+      <stop offset="100%" stop-color="#E8B04B"/>
+    </linearGradient>
+    <text id="ld" x="32" y="44" text-anchor="middle"
+          font-family="Arial, Helvetica, sans-serif" font-weight="900"
+          font-size="33" letter-spacing="-1.5">LD</text>
+  </defs>
+
+  <!-- circular badge -->
+  <circle cx="32" cy="32" r="32" fill="url(#bg)"/>
+  <circle cx="32" cy="32" r="30" fill="none" stroke="#FFFFFF" stroke-opacity="0.92" stroke-width="2"/>
+
+  <!-- 3D extrusion: amber side faces, light from top-left, depth toward bottom-right -->
+  <use href="#ld" x="6" y="6" fill="#6f4a16" opacity="0.85"/>
+  <use href="#ld" x="5" y="5" fill="#79511a" opacity="0.85"/>
+  <use href="#ld" x="4" y="4" fill="#83581d" opacity="0.85"/>
+  <use href="#ld" x="3" y="3" fill="#8d6020" opacity="0.85"/>
+  <use href="#ld" x="2" y="2" fill="#976823" opacity="0.85"/>
+  <use href="#ld" x="1" y="1" fill="#a27026" opacity="0.85"/>
+  <!-- front face (amber gradient) + top highlight edge -->
+  <use href="#ld" x="0" y="0" fill="url(#front)"/>
+  <use href="#ld" x="0" y="0" fill="none" stroke="#FCE7B0" stroke-opacity="0.5" stroke-width="0.5"/>
+</svg>
