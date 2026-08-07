@@ -72,8 +72,8 @@ function HUDOverlay({ scanProgress }: { scanProgress: number }) {
         className="absolute left-0 right-0 h-px pointer-events-none z-20"
         style={{ top: `${scanProgress * 100}%` }}
       >
-        <div className="h-[2px] w-full bg-gradient-to-r from-transparent via-amber-400/50 to-transparent shadow-[0_0_12px_rgba(251,191,36,0.4)]" />
-        <div className="h-16 w-full bg-gradient-to-b from-amber-300/[0.07] to-transparent blur-sm" />
+        <div className="h-[1.5px] w-full bg-gradient-to-r from-transparent via-amber-300/40 to-transparent shadow-[0_0_10px_rgba(251,191,36,0.3)]" />
+        <div className="h-14 w-full bg-gradient-to-b from-amber-200/[0.05] to-transparent blur-sm" />
       </div>
 
       {/* Vignette */}
@@ -112,70 +112,143 @@ export default function Intro3D({ onDone }: { onDone: () => void }) {
   const [showAnnotations, setShowAnnotations] = useState(false);
   const [mouse, setMouse] = useState({ x: 0, y: 0 });
   const [hide, setHide] = useState(false);
+  const [outgoing, setOutgoing] = useState<number | null>(null);
   const startTs = useRef<number>(0);
-  const viewTs = useRef<number>(0);
-  const animFrame = useRef<number>(0);
+  const rafRef = useRef<number>(0);
+  const exitingRef = useRef(false);
 
   const lm = landmarks[idx];
   const nextIdx = (idx + 1) % landmarks.length;
 
-  /* Scan animation loop */
+  /* Preload all landmark images on mount so switching is instant */
+  useEffect(() => {
+    landmarks.forEach((l) => {
+      const im = new Image();
+      im.src = l.img;
+    });
+  }, []);
+
+  /* Scan + auto-advance cycle. Re-runs only when the landmark (idx) changes,
+     so the cadence is identical and stable for every single slide. */
   useEffect(() => {
     startTs.current = performance.now();
+    setScanPct(0);
+    setShowAnnotations(false);
+    setPhase('scanning');
+
+    const SCAN_MS = 2200; // scan + reveal
+    const VIEW_MS = 5400; // composed dwell — identical for every landmark
+
     const tick = (now: number) => {
-      const elapsed = (now - startTs.current) / 1000;
-      if (phase === 'scanning') {
-        // Scan sweeps top→bottom over ~2s
-        const p = Math.min(elapsed / 2, 1);
-        setScanPct(easeInOutQuad(p));
-        if (p >= 1 && !showAnnotations) {
-          setShowAnnotations(true);
-          setTimeout(() => setPhase('viewing'), 200);
-        }
-      }
-      if (phase === 'viewing') {
-        // Auto-advance after viewing period
-        if (!viewTs.current) viewTs.current = now;
-        const viewElapsed = (now - viewTs.current) / 1000;
-        if (viewElapsed > 5.5) {
-          // Transition to next landmark
-          setShowAnnotations(false);
-          setScanPct(0);
-          viewTs.current = 0;
-          setPhase('scanning');
-          setIdx(nextIdx);
-        }
-      }
-      animFrame.current = requestAnimationFrame(tick);
+      const p = Math.min((now - startTs.current) / SCAN_MS, 1);
+      setScanPct(easeInOutQuad(p));
+      rafRef.current = requestAnimationFrame(tick);
     };
-    animFrame.current = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(animFrame.current);
-  }, [phase, idx, showAnnotations, nextIdx]);
+    rafRef.current = requestAnimationFrame(tick);
+
+    const t1 = setTimeout(() => {
+      setShowAnnotations(true);
+      setPhase('viewing');
+    }, SCAN_MS);
+    const t2 = setTimeout(() => {
+      if (exitingRef.current) return;
+      const to = (idx + 1) % landmarks.length;
+      setOutgoing(idx); // begin graceful slide-out of the old layer
+      setIdx(to);
+    }, SCAN_MS + VIEW_MS);
+
+    return () => {
+      cancelAnimationFrame(rafRef.current);
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
+  }, [idx]);
 
   /* Mouse parallax */
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    const x = (e.clientX / window.innerWidth - 0.5) * 2;   // -1..1
+    const x = (e.clientX / window.innerWidth - 0.5) * 2; // -1..1
     const y = (e.clientY / window.innerHeight - 0.5) * 2;
     setMouse({ x, y });
   }, []);
 
   /* Click to enter */
   const enter = useCallback(() => {
+    exitingRef.current = true;
     setPhase('exiting');
     setHide(true);
     setTimeout(onDone, 700);
   }, [onDone]);
 
   /* Parallax transform values */
-  const rotX = mouse.y * -3;   // degrees
+  const rotX = mouse.y * -3; // degrees
   const rotY = mouse.x * 3;
-  const tx = mouse.x * 12;     // px
+  const tx = mouse.x * 12; // px
   const ty = mouse.y * 8;
 
-  /* Clip-path for scan reveal */
-  const clipPath = phase === 'scanning' || phase === 'viewing'
-    ? `inset(${(1 - easeOutCubic(Math.min(scanPct * 1.3, 1))) * 100}% 0 0 0)`
-    : 'inset(0 0 0 0)';
+  /* Clip-path for scan reveal (applied only to the incoming layer) */
+  const revealPct = easeOutCubic(Math.min(scanPct * 1.3, 1));
+  const clipPath = `inset(${(1 - revealPct) * 100}% 0 0 0)`;
+
+  /* Render one full slide (watermark + building) in a given transition state */
+  const renderLayer = (lmIdx: number, mode: 'enter' | 'exit') => {
+    const l = landmarks[lmIdx];
+    const isEnter = mode === 'enter';
+    return (
+      <div
+        key={isEnter ? `layer-in-${lmIdx}` : `layer-out-${lmIdx}`}
+        className={`absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden intro-layer ${
+          isEnter ? 'intro-layer--enter' : 'intro-layer--exit'
+        }`}
+        style={{ perspective: '1000px' }}
+        onAnimationEnd={isEnter ? undefined : () => setOutgoing(null)}
+      >
+        {/* Watermark behind the building */}
+        <div
+          className="absolute inset-0 flex items-center justify-center overflow-hidden"
+          style={{ perspective: '800px' }}
+        >
+          <div
+            className="transition-transform duration-200 ease-out will-change-transform"
+            style={{ transform: `rotateX(${rotX * 0.3}deg) rotateY(${rotY * 0.3}deg)` }}
+          >
+            <span
+              className="font-serif font-bold tracking-wider text-stone-200/60 select-none leading-none whitespace-nowrap"
+              style={{
+                fontSize: 'clamp(100px, 18vw, 280px)',
+                userSelect: 'none',
+                WebkitUserSelect: 'none' as const,
+              }}
+            >
+              {l.watermark}
+            </span>
+          </div>
+        </div>
+
+        {/* Building image with parallax + Ken Burns + scan reveal */}
+        <div
+          className="relative transition-transform duration-150 ease-out will-change-transform"
+          style={{
+            transform: `rotateX(${rotX}deg) rotateY(${rotY}deg) translateX(${tx}px) translateY(${ty}px)`,
+            maxWidth: '82vw',
+            maxHeight: '72vh',
+            clipPath: isEnter ? clipPath : undefined,
+          }}
+        >
+          <img
+            src={l.img}
+            alt={l.name}
+            className="intro-kb w-auto max-h-[68vh] object-contain drop-shadow-[0_20px_60px_rgba(63,59,54,0.12)]"
+            draggable={false}
+            decoding="async"
+            loading="eager"
+            style={{ filter: 'contrast(1.02) saturate(0.94)' }}
+          />
+          <div className="absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-[#f5f0e8]/40 to-transparent pointer-events-none" />
+          <div className="absolute inset-x-0 top-0 h-1/6 bg-gradient-to-b from-[#f5f0e8]/20 to-transparent pointer-events-none" />
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div
@@ -186,57 +259,35 @@ export default function Intro3D({ onDone }: { onDone: () => void }) {
       }`}
       onContextMenu={(e) => e.preventDefault()}
     >
-      {/* ── Watermark text (large serif behind everything) ── */}
-      <div
-        className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden"
-        style={{ perspective: '800px' }}
-      >
-        <div
-          className="transition-transform duration-200 ease-out will-change-transform"
-          style={{
-            transform: `rotateX(${rotX * 0.3}deg) rotateY(${rotY * 0.3}deg)`,
-          }}
-        >
-          <span
-            className="font-serif font-bold tracking-wider text-stone-200/60 select-none leading-none whitespace-nowrap"
-            style={{
-              fontSize: 'clamp(100px, 18vw, 280px)',
-              userSelect: 'none',
-              WebkitUserSelect: 'none' as const,
-            }}
-          >
-            {lm.watermark}
-          </span>
-        </div>
-      </div>
+      {/* keyframes + layer transition styles */}
+      <style>{`
+        @keyframes introLayerEnter {
+          0%   { opacity: 0; transform: translateY(56px) scale(1.07); }
+          55%  { opacity: 1; }
+          100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes introLayerExit {
+          0%   { opacity: 1; transform: translateY(0) scale(1); }
+          100% { opacity: 0; transform: translateY(-42px) scale(1.04); }
+        }
+        @keyframes introKenBurns {
+          0%   { transform: scale(1.005); }
+          100% { transform: scale(1.06); }
+        }
+        .intro-layer { will-change: transform, opacity; }
+        .intro-layer--enter { animation: introLayerEnter 1.5s cubic-bezier(0.22, 1, 0.36, 1) both; }
+        .intro-layer--exit  { animation: introLayerExit 1.4s cubic-bezier(0.55, 0, 0.45, 1) both; }
+        .intro-kb { animation: introKenBurns 7.5s ease-out forwards; transform-origin: center; }
+        @media (prefers-reduced-motion: reduce) {
+          .intro-layer--enter, .intro-layer--exit, .intro-kb { animation: none; }
+        }
+      `}</style>
 
-      {/* ── Building image with parallax & scan reveal ── */}
-      <div
-        className="absolute inset-0 flex items-center justify-center pointer-events-none"
-        style={{ perspective: '1000px', clipPath }}
-      >
-        <div
-          className="relative transition-transform duration-150 ease-out will-change-transform"
-          style={{
-            transform: `rotateX(${rotX}deg) rotateY(${rotY}deg) translateX(${tx}px) translateY(${ty}px)`,
-            maxWidth: '82vw',
-            maxHeight: '72vh',
-          }}
-        >
-          {/* Building render */}
-          <img
-            src={lm.img}
-            alt={lm.name}
-            className="w-auto max-h-[68vh] object-contain drop-shadow-[0_20px_60px_rgba(63,59,54,0.12)]"
-            draggable={false}
-            style={{ filter: 'contrast(1.02) saturate(0.94)' }}
-          />
+      {/* Outgoing (fading) layer — rendered beneath the incoming one */}
+      {outgoing !== null && renderLayer(outgoing, 'exit')}
 
-          {/* Soft gradient overlays for depth matching */}
-          <div className="absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-[#f5f0e8]/40 to-transparent pointer-events-none" />
-          <div className="absolute inset-x-0 top-0 h-1/6 bg-gradient-to-b from-[#f5f0e8]/20 to-transparent pointer-events-none" />
-        </div>
-      </div>
+      {/* Incoming / current layer */}
+      {renderLayer(idx, 'enter')}
 
       {/* ── Annotations ── */}
       {lm.annotations.map((ann, i) => (
