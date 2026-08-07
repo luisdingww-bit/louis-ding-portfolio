@@ -136,8 +136,8 @@ export default function Intro3D({ onDone }: { onDone: () => void }) {
     setShowAnnotations(false);
     setPhase('scanning');
 
-    const SCAN_MS = 2200; // scan + reveal
-    const VIEW_MS = 5400; // composed dwell — identical for every landmark
+    const SCAN_MS = 1900; // scan + reveal
+    const VIEW_MS = 3700; // composed dwell — identical for every landmark
 
     const tick = (now: number) => {
       const p = Math.min((now - startTs.current) / SCAN_MS, 1);
@@ -277,7 +277,7 @@ export default function Intro3D({ onDone }: { onDone: () => void }) {
         .intro-layer { will-change: transform, opacity; }
         .intro-layer--enter { animation: introLayerEnter 1.5s cubic-bezier(0.22, 1, 0.36, 1) both; }
         .intro-layer--exit  { animation: introLayerExit 1.4s cubic-bezier(0.55, 0, 0.45, 1) both; }
-        .intro-kb { animation: introKenBurns 7.5s ease-out forwards; transform-origin: center; }
+        .intro-kb { animation: introKenBurns 5.6s ease-out forwards; transform-origin: center; }
         @media (prefers-reduced-motion: reduce) {
           .intro-layer--enter, .intro-layer--exit, .intro-kb { animation: none; }
         }
