@@ -1,5 +1,6 @@
-/* Images served from public/images/landmarks/ — referenced as absolute paths at runtime */
-const IMG_BASE = '/images/landmarks';
+/* Images served from public/images/landmarks/ — resolved against vite's base
+   so it works on both GitHub Pages (/louis-ding-portfolio/) and Surge (/). */
+const IMG_BASE = import.meta.env.BASE_URL + 'images/landmarks';
 
 export interface Landmark {
   id: string;
